@@ -4,7 +4,7 @@ import sys
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-  
+
 class MyTaglistWidget(QListWidget):
     def __init__(self, parent = None):
         QListWidget.__init__(self, parent)
@@ -53,10 +53,14 @@ class TaglistPanel(QWidget):
         self.connect(self._itemedit, SIGNAL('textChanged(QString)'), self._tagview.filterList)
                     # self._tagview, SLOT('filterList()'))
 
-        self.setMaximumSize(QtCore.QSize(150, 16777215))
         vbox.addWidget(self._tagview)
 
         self.setLayout(vbox)
+        self.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Preferred)
+
+    def sizeHint(self):
+        return QSize(90,16777215)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

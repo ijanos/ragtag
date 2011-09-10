@@ -16,7 +16,7 @@ class MainWindow(QFrame):
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
 
-        
+
         taglist = TaglistPanel()
         tagbar = Tagbar()
         thumbview = Thumbnails()
@@ -33,13 +33,18 @@ class MainWindow(QFrame):
             thumbview.addImage('pic/nestor.jpg')
             thumbview.addImage('pic/juv.jpg')
             thumbview.addImage('pic/kili.jpg')
-#            thumbview.addImage('pic/DSCF6114.JPG')
 
-        self.connect(taglist._tagview, SIGNAL('tagClicked()'), 
+        self.connect(taglist._tagview, SIGNAL('tagClicked()'),
                      tagbar,  SLOT('addTagslot()'))
 
-        hbox.addWidget(taglist)
-        hbox.addLayout(vbox)
+        splitter = QSplitter()
+        vboxw = QWidget()
+        vboxw.setLayout(vbox)
+
+        splitter.addWidget(taglist)
+        splitter.addWidget(vboxw)
+
+        hbox.addWidget(splitter)
 
         vbox.addWidget(ctrl)
 

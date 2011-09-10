@@ -9,7 +9,7 @@ class Controller(QWidget):
         QWidget.__init__(self, parent)
 
         layout = QHBoxLayout()
-        
+
         txt = QLabel("Hello World")
 
         bLoad = QPushButton("Load images")

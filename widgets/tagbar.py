@@ -25,7 +25,6 @@ class Tagbar(QWidget):
         hbox.insertStretch(-1)
         self.setLayout(hbox)
 
-    
     @pyqtSlot()
     def addTagslot(self):
         self.addTag("omg")
