@@ -10,7 +10,6 @@ class MyTaglistWidget(QListWidget):
         QListWidget.__init__(self, parent)
         self.setAlternatingRowColors(True)
         self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'), self.clicked)
-        #self.connect(self, SIGNAL('itemSelectionChanged()'), self.clicked)
 
     @pyqtSlot()
     def clicked(self, item):
@@ -28,8 +27,11 @@ class MyTaglistWidget(QListWidget):
                 self.setItemHidden(item, False)
             else:
                 self.setItemHidden(item, True)
-#        for item in matched:
-#            self.setItemHidden(item, False)
+
+    def setTaglist(self, tags):
+        self.clear()
+        self.addItems(tags)
+
 
 class TaglistPanel(QWidget):
     def __init__(self):
@@ -42,13 +44,7 @@ class TaglistPanel(QWidget):
         vbox.addWidget(self._itemedit)
 
         self._tagview = MyTaglistWidget()
-        self._tagview.addItems(["recece1","recece2","@kutya","@cica",u"ősz","tanya","pest",u"árívíz"])
-        ###############
-        tmplist = []
-        for tmp in xrange(0,200):
-            tmplist.append("foobar"+str(tmp))
-        self._tagview.addItems(tmplist)
-       ###############
+        self._tagview.setTaglist(["recece1","recece2","@kutya","@cica",u"ősz","tanya","pest",u"árívíz"])
 
         self.connect(self._itemedit, SIGNAL('textChanged(QString)'), self._tagview.filterList)
                     # self._tagview, SLOT('filterList()'))
