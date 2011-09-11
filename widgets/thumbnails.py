@@ -1,9 +1,14 @@
 #-*- coding: utf-8 -*-
+"""
+A widget for displaying a thumnail grid
+"""
 
 import sys
+
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 from flowlayout import FlowLayout
 
 class Thumbnail(QLabel):
@@ -36,8 +41,6 @@ class Thumbnails(QWidget):
 
         self._layout = FlowLayout()
         layout = QHBoxLayout()
-#        self._layout = QVBoxLayout()
-
 
         container = QWidget()
         scrollArea = QScrollArea();
@@ -60,8 +63,6 @@ class Thumbnails(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = Thumbnails()
-    w.addImage('nestor.jpg')
-    w.addImage('juv.jpg')
     w.show()
     app.exec_()
     sys.exit()

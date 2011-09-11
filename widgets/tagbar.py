@@ -1,4 +1,7 @@
 #-*- coding: utf-8 -*-
+"""
+A widget to show active tags
+"""
 
 import sys
 from PyQt4 import *
