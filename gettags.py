@@ -1,7 +1,18 @@
+#-*- coding: utf-8 -*-
+"""
+Parse image files and store their metadata in the database
+"""
+
 import sys
 import os
+import os.path
 
 import pyexiv2
+
+from managedb import PhotoDB
+
+photos = PhotoDB('testdb')
+photos.create_tables()
 
 def getMetadata(f):
     metadata = pyexiv2.ImageMetadata(f)
@@ -14,7 +25,13 @@ def getMetadata(f):
 
 def getTagList(filepath):
     (_, taglist) = getMetadata(filepath)
+    for tag in taglist:
+        photos.lookupTag(tag)
     print filepath, taglist
+
+def storePhoto(dirid, filepath):
+    (_, taglist) = getMetadata(filepath)
+    photos.storePhoto(filepath,taglist)
 
 def traverseDir(directory, extfilter, fun):
     """
@@ -26,13 +43,19 @@ def traverseDir(directory, extfilter, fun):
             ext = name.split('.')[-1].lower()
             if  ext in extfilter:
                 f = os.path.join(root, name)
+                f = "/".join(f.split('/')[1:])
                 fun(f)
 
-def processFile(pathtofile):
-    os.path.basename(pathtofile)
-    os.path.dirname(pathtofile)
+def processDir(pathtodir):
+    fullpath = os.path.abspath(pathtodir)
+    os.chdir(fullpath)
+    dirid = photos.lookupDir(fullpath)
+    extfilter = ['jpg', 'jpeg']
+    def f(filepath):
+        (_, taglist) = getMetadata(filepath)
+        photos.storePhoto(dirid, filepath, taglist)
+    traverseDir(".", extfilter, f)
 
 if __name__=="__main__":
-    dir1 = "/mnt/data/Documents/photo/2011/"
-    extfilter = ['jpg', 'jpeg']
-    traverseDir(dir1, extfilter, getTagList)
+    dir1 = "pic"
+    processDir(dir1)
