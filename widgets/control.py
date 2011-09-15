@@ -59,9 +59,8 @@ class Controller(QWidget):
         self.emit(SIGNAL("updateTags"), taglist)
 
     def loadImgs(self):
-        tagidlist = [tagid for (tagid, _) in self.currentTags]
-        print self.currentTags
-        imglist = self.photoDB.getPhotosByTag(tagidlist)
+        tagidlist = [tagid for (tagid, _) in self.currentTags] # extract the IDs
+        imglist = self.photoDB.getPhotosByTagIDs(tagidlist)
         self.emit(SIGNAL('addPhotos'), imglist)
 
     def tagClicked(self, tagid, tagname):

@@ -50,10 +50,14 @@ class PhotoDB():
             );
         '''
         self.cursor.executescript(sqlscript)
-
-
-    def lookupDir(self,path):
         self.connection.commit()
+
+
+    def lookupDir(self, path):
+        """
+        Look up a given path in the database and return its ID.
+        Create a new entry if the path was not in the DB.
+        """
         self.cursor.execute('SELECT id FROM dirs WHERE path = ?', (path,))
         result = self.cursor.fetchone()
         if result:
@@ -87,7 +91,7 @@ class PhotoDB():
                 (tagid, imgid))
 
 
-    def getPhotosByTag(self, tagidlist):
+    def getPhotosByTagIDs(self, tagidlist):
         idlist = ','.join([str(x) for x in tagidlist])
         idlistlen = len(tagidlist)
         sqlquery = '''
@@ -99,6 +103,8 @@ class PhotoDB():
           GROUP BY imgid
           HAVING COUNT( imgid ) = %s
         ''' % (idlist, idlistlen)
+        # prepare statement cannot really work here, but no problem
+        # the user has direct access to the databse anyways.
         self.cursor.execute(sqlquery)
         result = []
         for (path1,path2) in self.cursor:
@@ -123,7 +129,7 @@ class PhotoDB():
         ''' which tags are used with the images '''
         idlist = ','.join([str(x) for x in imgIDlist])
         sqlquery='''
-          SELECT distinct xtagimg.tagid FROM images, xtagimg on xtagimg.imgid = id
+          SELECT DISTINCT xtagimg.tagid FROM images, xtagimg ON xtagimg.imgid = id
           WHERE images.id IN (%s)
         ''' % idlist
 
@@ -139,9 +145,6 @@ class PhotoDB():
 # where tagid in (1,2)
 # GROUP BY imgid
 # HAVING COUNT( imgid ) = 2
-
-
-
 
 if __name__ == "__main__":
     photos = PhotoDB('testdb')
