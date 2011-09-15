@@ -55,10 +55,16 @@ class Thumbnails(QWidget):
 
         self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
 
-    @pyqtSlot()
+    def addImages(self, imagelist):
+        for image in imagelist:
+            self.addImage(image)
+
     def addImage(self, image):
         thumb = Thumbnail(image)
         self._layout.addWidget(thumb)
+
+    def reset(self):
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

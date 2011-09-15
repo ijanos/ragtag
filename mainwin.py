@@ -23,21 +23,11 @@ class MainWindow(QFrame):
 
         ctrl = Controller()
 
-        tagbar.addTag("kutya")
-        tagbar.addTag("cica")
-        tagbar.addTag(u"akármi")
-        tagbar.addTag(u"árvíz")
-        tagbar.addTag(u"tűrő")
-        tagbar.addTag(u"foobar")
-        for x in xrange(0,20):
-            thumbview.addImage('pic/nestor.jpg')
-            thumbview.addImage('pic/juv.jpg')
-            thumbview.addImage('pic/kili.jpg')
-
-        self.connect(taglist._tagview, SIGNAL('tagClicked()'),
-                     tagbar,  SLOT('addTagslot()'))
+        self.connect(taglist._tagview, SIGNAL('tagClicked'), ctrl.tagClicked)
 
         self.connect(ctrl, SIGNAL('updateTags'), taglist.setTaglist)
+        self.connect(ctrl, SIGNAL('addPhotos'), thumbview.addImages)
+        self.connect(ctrl, SIGNAL('addTag'), tagbar.addTag)
 
         splitter = QSplitter()
         vboxw = QWidget()

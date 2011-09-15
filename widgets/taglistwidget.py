@@ -6,6 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class MyListItem(QListWidgetItem):
+    """ Extend QListWidgetItem with some information about the tag"""
     def __init__(self, tagid, name, weight, parent = None):
         QListWidgetItem.__init__(self, parent)
         self._name = name
@@ -15,17 +16,18 @@ class MyListItem(QListWidgetItem):
         self.setText(name)
 
 class MyTaglistWidget(QListWidget):
+    """ 
+    QListWidget extended with filter capabilites and it can read
+    my tagdata tuple
+    """
     def __init__(self, parent = None):
         QListWidget.__init__(self, parent)
         self.setAlternatingRowColors(True)
         self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'), self.clicked)
 
-    @pyqtSlot()
     def clicked(self, item):
-        self.emit(SIGNAL('tagClicked'))
-        print "click ", item
+        self.emit(SIGNAL('tagClicked'), item._tagid, item._name)
 
-    @pyqtSlot()
     def filterList(self, text):
         # TODO allow user to toggle case-sensitvity
         text = unicode(text).lower() # lower for case insesitivity
@@ -56,7 +58,6 @@ class TaglistPanel(QWidget):
         self._tagview = MyTaglistWidget()
 
         self.connect(self._itemedit, SIGNAL('textChanged(QString)'), self._tagview.filterList)
-                    # self._tagview, SLOT('filterList()'))
 
         vbox.addWidget(self._tagview)
 

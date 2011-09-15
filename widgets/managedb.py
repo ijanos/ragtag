@@ -3,6 +3,7 @@
 Database absctraction
 """
 
+import os.path
 import sqlite3
 
 class PhotoDB():
@@ -86,23 +87,25 @@ class PhotoDB():
                 (tagid, imgid))
 
 
-    def getPhotos(self, tagidlist):
+    def getPhotosByTag(self, tagidlist):
         idlist = ','.join([str(x) for x in tagidlist])
         idlistlen = len(tagidlist)
         sqlquery = '''
-          SELECT images.path FROM images, xtagimg ON xtagimg.imgid=images.id
+          SELECT dirs.path,images.path FROM images, xtagimg ON xtagimg.imgid=images.id,
+            dirs ON dirs.id = images.dirid
           WHERE tagid IN (%s)
           GROUP BY imgid
           HAVING COUNT( imgid ) = %s
         ''' % (idlist, idlistlen)
         self.cursor.execute(sqlquery)
         result = []
-        for row in self.cursor:
-            result.append(row[0])
+        for (path1,path2) in self.cursor:
+            result.append(os.path.join(path1,path2))
         return result
 
     def getTaglist(self):
         '''Return tag id, tagname and the usage frequency'''
+        # TODO specify different orders: frequency/lexical
         sqlquery = '''
             SELECT id,name,count(id) as used FROM tags, xtagimg on xtagimg.tagid = id
             GROUP BY id

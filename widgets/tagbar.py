@@ -28,16 +28,12 @@ class Tagbar(QWidget):
         hbox.insertStretch(-1)
         self.setLayout(hbox)
 
-    @pyqtSlot()
-    def addTagslot(self):
-        self.addTag("omg")
-
     def addTag(self,tagname):
         tagbutton = QPushButton(tagname)
-     #   tagbutton.setFlat(True)
+        tagbutton.setFlat(True)
 
         def clickfun():
-            self.emit(SIGNAL('tagRemoved()'))
+            self.emit(SIGNAL('tagRemoved'))
             tagbutton.hide()
 
         self.connect(tagbutton, SIGNAL('clicked()'), clickfun)
