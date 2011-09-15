@@ -27,11 +27,11 @@ class MyTaglistWidget(QListWidget):
 
     @pyqtSlot()
     def filterList(self, text):
-        text = unicode(text)
-        matched = self.findItems(text, Qt.MatchContains)
+        # TODO allow user to toggle case-sensitvity
+        text = unicode(text).lower() # lower for case insesitivity
         for idx in xrange(0,self.count()):
             item = self.item(idx)
-            itemtext = unicode(item.text())
+            itemtext = unicode(item.text()).lower() #here too
             if (text in itemtext):
                 self.setItemHidden(item, False)
             else:
