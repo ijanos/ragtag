@@ -91,8 +91,10 @@ class PhotoDB():
         idlist = ','.join([str(x) for x in tagidlist])
         idlistlen = len(tagidlist)
         sqlquery = '''
-          SELECT dirs.path,images.path FROM images, xtagimg ON xtagimg.imgid=images.id,
-            dirs ON dirs.id = images.dirid
+          SELECT dirs.path,images.path
+            FROM images,
+                 xtagimg ON xtagimg.imgid = images.id,
+                 dirs ON dirs.id = images.dirid
           WHERE tagid IN (%s)
           GROUP BY imgid
           HAVING COUNT( imgid ) = %s
