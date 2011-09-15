@@ -37,6 +37,8 @@ class MainWindow(QFrame):
         self.connect(taglist._tagview, SIGNAL('tagClicked()'),
                      tagbar,  SLOT('addTagslot()'))
 
+        self.connect(ctrl, SIGNAL('updateTags'), taglist.setTaglist)
+
         splitter = QSplitter()
         vboxw = QWidget()
         vboxw.setLayout(vbox)

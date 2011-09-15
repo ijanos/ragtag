@@ -5,6 +5,15 @@ from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+class MyListItem(QListWidgetItem):
+    def __init__(self, tagid, name, weight, parent = None):
+        QListWidgetItem.__init__(self, parent)
+        self._name = name
+        self._tagid = tagid
+        self._wight = weight
+
+        self.setText(name)
+
 class MyTaglistWidget(QListWidget):
     def __init__(self, parent = None):
         QListWidget.__init__(self, parent)
@@ -13,7 +22,7 @@ class MyTaglistWidget(QListWidget):
 
     @pyqtSlot()
     def clicked(self, item):
-        self.emit(SIGNAL('tagClicked()'))
+        self.emit(SIGNAL('tagClicked'))
         print "click ", item
 
     @pyqtSlot()
@@ -30,7 +39,8 @@ class MyTaglistWidget(QListWidget):
 
     def setTaglist(self, tags):
         self.clear()
-        self.addItems(tags)
+        for (tid, tname, tw) in tags:
+            self.addItem(MyListItem(tid, tname, tw))
 
 
 class TaglistPanel(QWidget):
@@ -44,7 +54,6 @@ class TaglistPanel(QWidget):
         vbox.addWidget(self._itemedit)
 
         self._tagview = MyTaglistWidget()
-        self._tagview.setTaglist(["recece1","recece2","@kutya","@cica",u"ősz","tanya","pest",u"árívíz"])
 
         self.connect(self._itemedit, SIGNAL('textChanged(QString)'), self._tagview.filterList)
                     # self._tagview, SLOT('filterList()'))
@@ -53,6 +62,9 @@ class TaglistPanel(QWidget):
 
         self.setLayout(vbox)
         self.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Preferred)
+
+    def setTaglist(self, taglist):
+        self._tagview.setTaglist(taglist)
 
     def sizeHint(self):
         return QSize(90,16777215)
