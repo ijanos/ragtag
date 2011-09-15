@@ -85,7 +85,62 @@ class PhotoDB():
                 'INSERT OR REPLACE INTO xtagimg(tagid,imgid) VALUES (?,?)',
                 (tagid, imgid))
 
+
+    def getPhotos(self, tagidlist):
+        idlist = ','.join([str(x) for x in tagidlist])
+        idlistlen = len(tagidlist)
+        sqlquery = '''
+          SELECT images.path FROM images, xtagimg ON xtagimg.imgid=images.id
+          WHERE tagid IN (%s)
+          GROUP BY imgid
+          HAVING COUNT( imgid ) = %s
+        ''' % (idlist, idlistlen)
+        self.cursor.execute(sqlquery)
+        result = []
+        for row in self.cursor:
+            result.append(row[0])
+        return result
+
+    def getTaglist(self):
+        '''Return tag id, tagname and the usage frequency'''
+        sqlquery = '''
+            SELECT id,name,count(id) as used FROM tags, xtagimg on xtagimg.tagid = id
+            GROUP BY id
+            ORDER BY count(id) DESC
+        '''
+        self.cursor.execute(sqlquery)
+        result = []
+        for row in self.cursor:
+            result.append(row)
+        return result
+
+    def getTagsForImages(self, imgIDlist):
+        ''' which tags are used with the images '''
+        idlist = ','.join([str(x) for x in imgIDlist])
+        sqlquery='''
+          SELECT distinct xtagimg.tagid FROM images, xtagimg on xtagimg.imgid = id
+          WHERE images.id IN (%s)
+        ''' % idlist
+
+# get the list of pictures            
+#SELECT  dirs.path, images.path FROM dirs, images
+#WHERE dirs.id = images.dirid
+
+
+# SELECT images.path, tags.name from images,xtagimg,tags
+# where xtagimg.tagid = 2 and xtagimg.imgid = images.id and xtagimg.tagid = tags.id
+
+# select images.path from images, xtagimg on xtagimg.imgid=images.id
+# where tagid in (1,2)
+# GROUP BY imgid
+# HAVING COUNT( imgid ) = 2
+
+
+
+
 if __name__ == "__main__":
     photos = PhotoDB('testdb')
-    photos.create_tables()
-    photos.addDir('pic')
+    for p in photos.getPhotos([2]):
+        print p
+    #photos.create_tables()
+    #photos.addDir('pic')
