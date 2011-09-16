@@ -55,7 +55,14 @@ class Thumbnails(QWidget):
 
         self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
 
+    def clearWidget(self):
+        # empty the layou
+        # FIXME this is still buggy, traces of the widgets left
+        for i in xrange(0,self._layout.count()):
+            self._layout.itemAt(i).widget().close()
+
     def addImages(self, imagelist):
+        self.clearWidget()
         for image in imagelist:
             self.addImage(image)
 

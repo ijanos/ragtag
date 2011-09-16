@@ -13,6 +13,7 @@ class Controller(QWidget):
         self.photoDB = None
 
         self.currentTags = []
+        self.currentImages = []
 
         layout = QHBoxLayout()
 
@@ -41,7 +42,12 @@ class Controller(QWidget):
         self.connect(bImgs, SIGNAL('clicked()'), self.loadImgs)
         self.connect(bReset, SIGNAL('clicked()'), self.reset)
 
+
         self.setLayout(layout)
+
+    def start(self):
+        self.photoDB = PhotoDB('testdb') #XXX debug value
+        self.loadTags()
 
     def reset(self):
         self.currentTags = []
@@ -59,15 +65,36 @@ class Controller(QWidget):
         self.emit(SIGNAL("updateTags"), taglist)
 
     def loadImgs(self):
+        # TODO empty prevoius images
         tagidlist = [tagid for (tagid, _) in self.currentTags] # extract the IDs
-        imglist = self.photoDB.getPhotosByTagIDs(tagidlist)
-        self.emit(SIGNAL('addPhotos'), imglist)
+        self.currentImages = self.photoDB.getPhotosByTagIDs(tagidlist)
+        imgpathlist = [p for (_, p) in self.currentImages] # extract path from tuple
+        self.emit(SIGNAL('addPhotos'), imgpathlist)
+
+    def filterShownTags(self):
+        if not self.currentTags: #if the list is empty then show all tags
+            self.loadTags()
+            return
+        imgidList = [i for (i, _) in self.currentImages] # extract id from tuple
+        tagfilter = [tagid for (tagid, _) in self.currentTags] # extract the IDs
+        filteredtags = self.photoDB.getTagsForImages(imgidList,tagfilter)
+        self.emit(SIGNAL("updateTags"), filteredtags)
+
 
     def tagClicked(self, tagid, tagname):
         """ 
         This slot fires when the user clicks a tag in the list
         """
-        self.emit(SIGNAL('addTag'), tagname) #add tag to strip
+        self.emit(SIGNAL('addTag'), tagid, tagname) #add tag to strip
         self.currentTags.append((tagid,tagname)) #update state
         self.loadImgs() #list photos according to state
-        #TODO reduce list of tags according to state
+        self.filterShownTags() #reduce list of tags according to state
+
+    def tagRemoved(self, tagid):
+        """
+        This slot fires when a tag is removed
+        """
+        #remove tag with tagid from the currenttags list
+        self.currentTags = filter(lambda (tid,tn): tid != tagid,self.currentTags)
+        self.loadImgs() #list photos according to state
+        self.filterShownTags() #reduce list of tags according to state

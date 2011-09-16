@@ -28,13 +28,14 @@ class Tagbar(QWidget):
         hbox.insertStretch(-1)
         self.setLayout(hbox)
 
-    def addTag(self,tagname):
+    def addTag(self, tagid, tagname):
         tagbutton = QPushButton(tagname)
         tagbutton.setFlat(True)
 
         def clickfun():
-            self.emit(SIGNAL('tagRemoved'))
+            self.emit(SIGNAL('tagRemoved'), tagid)
             tagbutton.hide()
+            #TODO remove the button entirely
 
         self.connect(tagbutton, SIGNAL('clicked()'), clickfun)
         self._buttons.addWidget(tagbutton)
@@ -44,11 +45,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = Tagbar()
 
-    w.addTag("kutya")
-    w.addTag("cica")
-    w.addTag(u"akármi")
-    w.addTag(u"árvíz")
-    w.addTag(u"tűrő")
     w.addTag(u"foobar")
 
     w.show()

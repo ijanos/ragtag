@@ -95,7 +95,7 @@ class PhotoDB():
         idlist = ','.join([str(x) for x in tagidlist])
         idlistlen = len(tagidlist)
         sqlquery = '''
-          SELECT dirs.path,images.path
+          SELECT images.id, dirs.path, images.path
             FROM images,
                  xtagimg ON xtagimg.imgid = images.id,
                  dirs ON dirs.id = images.dirid
@@ -107,8 +107,8 @@ class PhotoDB():
         # the user has direct access to the databse anyways.
         self.cursor.execute(sqlquery)
         result = []
-        for (path1,path2) in self.cursor:
-            result.append(os.path.join(path1,path2))
+        for (imgid, path1, path2) in self.cursor:
+            result.append((imgid, os.path.join(path1,path2)))
         return result
 
     def getTaglist(self):
@@ -125,13 +125,22 @@ class PhotoDB():
             result.append(row)
         return result
 
-    def getTagsForImages(self, imgIDlist):
+    def getTagsForImages(self, imgIDlist, tagfilter):
         ''' which tags are used with the images '''
         idlist = ','.join([str(x) for x in imgIDlist])
+        filterlist = ','.join([str(x) for x in tagfilter])
         sqlquery='''
-          SELECT DISTINCT xtagimg.tagid FROM images, xtagimg ON xtagimg.imgid = id
-          WHERE images.id IN (%s)
-        ''' % idlist
+          SELECT id,name,count(id) as used FROM tags, xtagimg on xtagimg.tagid = id
+	      WHERE xtagimg.imgid IN (%s)
+          AND xtagimg.tagid NOT IN (%s)
+          GROUP BY id
+          ORDER BY count(id) DESC
+        ''' % (idlist, filterlist)
+        self.cursor.execute(sqlquery)
+        result = []
+        for row in self.cursor:
+            result.append(row)
+        return result
 
 # get the list of pictures            
 #SELECT  dirs.path, images.path FROM dirs, images

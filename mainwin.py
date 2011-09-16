@@ -28,6 +28,7 @@ class MainWindow(QFrame):
         self.connect(ctrl, SIGNAL('updateTags'), taglist.setTaglist)
         self.connect(ctrl, SIGNAL('addPhotos'), thumbview.addImages)
         self.connect(ctrl, SIGNAL('addTag'), tagbar.addTag)
+        self.connect(tagbar, SIGNAL('tagRemoved'), ctrl.tagRemoved)
 
         splitter = QSplitter()
         vboxw = QWidget()
@@ -44,6 +45,8 @@ class MainWindow(QFrame):
         vbox.addWidget(thumbview)
 
         self.setLayout(hbox)
+
+        ctrl.start()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
