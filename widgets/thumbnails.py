@@ -25,6 +25,9 @@ class Thumbnail(QLabel):
 
         self.setMaximumSize(QSize(200,200))
 
+        filenamesplit = image.split('/')
+        self.setToolTip("File: " + filenamesplit[-1])
+
         img = QPixmap(image)
 
         thumb = img.scaled(200,200,Qt.KeepAspectRatio)#,Qt.SmoothTransformation) # slooooooow :(
