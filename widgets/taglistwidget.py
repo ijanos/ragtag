@@ -65,6 +65,7 @@ class TaglistPanel(QWidget):
         self.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Preferred)
 
     def setTaglist(self, taglist):
+        self._itemedit.clear()
         self._tagview.setTaglist(taglist)
 
     def sizeHint(self):
