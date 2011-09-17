@@ -136,6 +136,7 @@ class PhotoDB():
           GROUP BY id
           ORDER BY count(id) DESC
         ''' % (idlist, filterlist)
+        # TODO modify this to not show any if no new picture can be added
         self.cursor.execute(sqlquery)
         result = []
         for row in self.cursor:

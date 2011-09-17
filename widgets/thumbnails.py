@@ -58,8 +58,8 @@ class Thumbnails(QWidget):
     def clearWidget(self):
         # empty the layout
         for i in xrange(0, self._layout.count()):
-            item = self._layout.itemAt(0) # delete the first item always!
-            # this is necessary because deleteing items on the fly causes rearranging them
+            item = self._layout.itemAt(0) # always delete the first item
+            # because items are being deleted during the loop
             widget = item.widget()
             widget.hide()
             widget.close()
