@@ -10,9 +10,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from flowlayout import FlowLayout
+from thumbnailer import Thumbnailmaker
 
 class Thumbnail(QLabel):
-    def __init__(self, image,parent=None):
+    def __init__(self, image, parent=None):
         QLabel.__init__(self, parent)
 
         self.setStyleSheet(#"background-color:black;"
@@ -25,14 +26,20 @@ class Thumbnail(QLabel):
 
         self.setMaximumSize(QSize(200,200))
 
+        self.setText("loading image...")
+
         filenamesplit = image.split('/')
         self.setToolTip("File: " + filenamesplit[-1])
 
-        img = QPixmap(image)
+        self.thread = Thumbnailmaker(image)
+        self.thread.start()
 
-        thumb = img.scaled(200,200,Qt.KeepAspectRatio)#,Qt.SmoothTransformation) # slooooooow :(
+        self.connect(self.thread, SIGNAL("imageDone"), self.setImage)
 
-        self.setPixmap(thumb)
+    def setImage(self, image):
+        pixmap = QPixmap()
+        pixmap.convertFromImage(image)
+        self.setPixmap(pixmap)
 
     def mousePressEvent(self, event):
         print "I've been clicked \o/", event
