@@ -29,7 +29,7 @@ class Tagbar(QWidget):
         self.setLayout(hbox)
 
     def addTag(self, tagid, tagname):
-        tagbutton = QPushButton(tagname)
+        tagbutton = QPushButton(unicode(tagname, encoding='utf-8'))
         tagbutton.setFlat(True)
 
         def clickfun():

@@ -13,7 +13,7 @@ class MyListItem(QListWidgetItem):
         self._tagid = tagid
         self._wight = weight
 
-        self.setText(name)
+        self.setText(unicode(name, encoding='utf-8'))
 
 class MyTaglistWidget(QListWidget):
     """ 
