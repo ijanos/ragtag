@@ -13,7 +13,7 @@ from flowlayout import FlowLayout
 from thumbnailer import Thumbnailmaker
 
 class Thumbnail(QLabel):
-    def __init__(self, image, parent=None):
+    def __init__(self, image, pool, parent=None):
         QLabel.__init__(self, parent)
 
         self.setStyleSheet(#"background-color:black;"
@@ -32,9 +32,10 @@ class Thumbnail(QLabel):
         self.setToolTip("File: " + filenamesplit[-1])
 
         self.thread = Thumbnailmaker(image)
-        self.thread.start()
+        self.connect(self.thread.obj, SIGNAL("imageDone"), self.setImage)
 
-        self.connect(self.thread, SIGNAL("imageDone"), self.setImage)
+        pool.start(self.thread)
+
 
     def setImage(self, image):
         pixmap = QPixmap()
@@ -51,6 +52,8 @@ class Thumbnails(QWidget):
 
         self._layout = FlowLayout()
         layout = QHBoxLayout()
+
+        self._threadpool = QThreadPool()
 
         container = QWidget()
         scrollArea = QScrollArea();
@@ -81,7 +84,7 @@ class Thumbnails(QWidget):
             self.addImage(image)
 
     def addImage(self, image):
-        thumb = Thumbnail(image)
+        thumb = Thumbnail(image, self._threadpool)
         self._layout.addWidget(thumb)
 
     def reset(self):
