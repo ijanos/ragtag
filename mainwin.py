@@ -30,6 +30,9 @@ class MainWindow(QFrame):
         self.connect(ctrl, SIGNAL('addTag'), tagbar.addTag)
         self.connect(tagbar, SIGNAL('tagRemoved'), ctrl.tagRemoved)
 
+        self.connect(tagbar, SIGNAL('clearTags'), ctrl.reset)
+        self.connect(tagbar, SIGNAL('clearTags'), thumbview.clearWidget)
+
         splitter = QSplitter()
         vboxw = QWidget()
         vboxw.setLayout(vbox)

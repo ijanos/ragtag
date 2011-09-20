@@ -24,9 +24,25 @@ class Tagbar(QWidget):
 #                           "border-color: black;"
 #                          )
 
+        clearbutton = QPushButton("Clear")
+
+        self.connect(clearbutton, SIGNAL('clicked()'), self.clearTags)
+
         hbox.addLayout(self._buttons)
         hbox.insertStretch(-1)
+        hbox.addWidget(clearbutton)
         self.setLayout(hbox)
+
+
+    def clearTags(self):
+        self.emit(SIGNAL('clearTags'))
+        for i in xrange(0, self._buttons.count()):
+            item = self._buttons.itemAt(0) # always delete the first item
+            # because items are being deleted during the loop
+            widget = item.widget()
+            widget.hide()
+            widget.close()
+            self._buttons.removeItem(item)
 
     def addTag(self, tagid, tagname):
         tagbutton = QPushButton(unicode(tagname, encoding='utf-8'))

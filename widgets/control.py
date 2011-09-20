@@ -42,7 +42,6 @@ class Controller(QWidget):
         self.connect(bImgs, SIGNAL('clicked()'), self.loadImgs)
         self.connect(bReset, SIGNAL('clicked()'), self.reset)
 
-
         self.setLayout(layout)
 
     def start(self):
@@ -51,6 +50,7 @@ class Controller(QWidget):
 
     def reset(self):
         self.currentTags = []
+        self.filterShownTags()
 
     def createGUI(self):
         pass #TODO
