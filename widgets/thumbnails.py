@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 """
-A widget for displaying a thumnail grid
+A widget for displaying a thumbnail grid
 """
 
 import sys
