@@ -128,7 +128,7 @@ class ThumbnailGridView(QListView):
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
 
-        self.connect(self, SIGNAL("clicked (const QModelIndex&)"), self.click)
+        self.connect(self, SIGNAL("activated (const QModelIndex&)"), self.click)
 
         # This does not seem to do anything
         # most likely because of QTBUG-7232
