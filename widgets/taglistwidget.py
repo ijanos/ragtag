@@ -16,7 +16,7 @@ class MyListItem(QListWidgetItem):
         self.setText(unicode(name, encoding='utf-8'))
 
 class MyTaglistWidget(QListWidget):
-    """ 
+    """
     QListWidget extended with filter capabilites and it can read
     my tagdata tuple
     """

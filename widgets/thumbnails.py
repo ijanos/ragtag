@@ -28,6 +28,8 @@ class Thumbnail(QLabel):
 
         self.setText("loading image...")
 
+        self.filename = image
+
         filenamesplit = image.split('/')
         self.setToolTip("File: " + filenamesplit[-1])
 
@@ -43,7 +45,7 @@ class Thumbnail(QLabel):
         self.setPixmap(pixmap)
 
     def mousePressEvent(self, event):
-        print "I've been clicked \o/", event
+        print "clicked ", self.filename
 
 
 class Thumbnails(QWidget):
