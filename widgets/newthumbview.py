@@ -28,14 +28,14 @@ class Thumbnail(QObject):
         self._qlistview = listview
         self._index = None
 
-    def calcThumbnail(self, index):
+    def calcThumbnail(self, index, w, h):
         if self._thread:
             # Called during an already running calculation
             return
 
         self._index = index
 
-        thread = Thumbnailmaker(self.path)
+        thread = Thumbnailmaker(self.path, w, h)
         self.connect(thread.obj, SIGNAL("imageDone"), self.imageDone)
 
         #Hold onto a reference to prevent PyQt from dereferencing
@@ -51,7 +51,8 @@ class Thumbnail(QObject):
         self.qimg = image
         self._thread = None #Let the thread die
 
-        # Tell the QListView widget to update the item
+        # Tell the QListView widget to update the item that will
+        # hold the freshly calculated thumbnail
         self._qlistview.update(self._index)
 
 class ThumbnailDelegate(QItemDelegate):
@@ -64,14 +65,7 @@ class ThumbnailDelegate(QItemDelegate):
     def paint(self, painter, option, index):
         painter.save()
 
-        value = index.data(Qt.DisplayRole)
-
-        thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
-
-        if not thumbnail.qimg:
-            thumbnail.calcThumbnail(index)
-
-        option.rect.adjust(0,0,-5,-5)
+        option.rect.adjust(0,0,-2,-2)
 
         if option.state & QStyle.State_Selected:
             painter.setBrush(QBrush(Qt.red))
@@ -79,20 +73,31 @@ class ThumbnailDelegate(QItemDelegate):
             painter.setBrush(QBrush(Qt.white))
         painter.drawRect(option.rect)
 
-        option.rect.adjust(10,10,-10,-10)
+        option.rect.adjust(2,2,-2,-2)
 
-        if thumbnail.qimg:
-            imgrect = thumbnail.qimg.rect
+        value = index.data(Qt.DisplayRole)
+
+        thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
+
+        if not thumbnail.qimg:
+            thumbnail.calcThumbnail(index, option.rect.width(), option.rect.height())
+            painter.drawText(option.rect, Qt.AlignCenter, "Loading...")
+        else:
+            imgrect = thumbnail.qimg.rect()
             pixmap = QPixmap()
             pixmap.convertFromImage(thumbnail.qimg)
+
+            # Adjust the image to the center both vertically and horizontally
+            adj_w = (option.rect.width() - imgrect.width()) / 2
+            adj_h = (option.rect.height() - imgrect.height()) / 2
+
+            option.rect.adjust(adj_w, adj_h, -adj_w, -adj_h)
             painter.drawPixmap(option.rect, pixmap)
-        else:
-            painter.drawText(option.rect, Qt.AlignCenter, "Loading...")
 
         painter.restore()
 
     def sizeHint(self, model, index):
-        return QSize(200,200)
+        return QSize(180,180)
 
 class ThumbnailsModel(QAbstractListModel):
     def __init__(self, thumbnailpaths, parent=None, *args):
@@ -113,6 +118,11 @@ class ThumbnailGridView(QListView):
         QListView.__init__(self, parent)
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
+
+        # This does not seem to do anything
+        # most likely because of QTBUG-7232
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+
 
 class Thumbnails(QWidget):
     def __init__(self, parent=None):

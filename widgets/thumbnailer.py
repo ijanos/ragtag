@@ -8,16 +8,19 @@ from PyQt4.QtCore import *
 from PIL import Image, ImageQt
 
 class Thumbnailmaker(QRunnable):
-    def __init__(self, filename, parent = None):
+    def __init__(self, filename, width, height, parent = None):
         QRunnable.__init__(self)
         self.filename = filename
+        self._w = width
+        self._h = height
+
         # Need a QObject to emit signals from a QRunnable
         self.obj = QObject()
 
     def run(self):
         img = Image.open(self.filename)
 
-        img.thumbnail( (200,200), Image.ANTIALIAS )
+        img.thumbnail( (self._w, self._h), Image.ANTIALIAS )
 
         thumb = ImageQt.ImageQt(img)
 
