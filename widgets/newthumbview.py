@@ -65,13 +65,15 @@ class ThumbnailDelegate(QItemDelegate):
     def paint(self, painter, option, index):
         painter.save()
 
+        border = True
+
         option.rect.adjust(0,0,-2,-2)
 
+        painter.setPen(QColor(200,200,200))
         if option.state & QStyle.State_Selected:
             painter.setBrush(QBrush(Qt.red))
         else:
             painter.setBrush(QBrush(Qt.white))
-        painter.drawRect(option.rect)
 
         option.rect.adjust(2,2,-2,-2)
 
@@ -81,6 +83,7 @@ class ThumbnailDelegate(QItemDelegate):
 
         if not thumbnail.qimg:
             thumbnail.calcThumbnail(index, option.rect.width(), option.rect.height())
+            painter.setPen(QColor(0,0,0))
             painter.drawText(option.rect, Qt.AlignCenter, "Loading...")
         else:
             imgrect = thumbnail.qimg.rect()
@@ -91,8 +94,14 @@ class ThumbnailDelegate(QItemDelegate):
             adj_w = (option.rect.width() - imgrect.width()) / 2
             adj_h = (option.rect.height() - imgrect.height()) / 2
 
+
             option.rect.adjust(adj_w, adj_h, -adj_w, -adj_h)
+            if border:
+                option.rect.adjust(-2, -2, 2, 2)
+                painter.drawRect(option.rect)
+                option.rect.adjust(2, 2, -2, -2)
             painter.drawPixmap(option.rect, pixmap)
+
 
         painter.restore()
 
