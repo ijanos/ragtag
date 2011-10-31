@@ -20,28 +20,34 @@ class Thumbnail(QObject):
     def __init__(self, imagepath, pool):
         QObject .__init__(self)
         self.path = imagepath
+        self._thread = None
         self.pool = pool
         self.qimg = None
-        logging.debug("Creating Thumbnail object for %s", imagepath)
-        self._t = None
 
     def calcThumbnail(self):
-        if self._t:
-            logging.warning("Called the function while thumbnail is already being calculated")
+        if self._thread:
+            # Called during an already running calculation
             return
+
         thread = Thumbnailmaker(self.path)
-        self._t = thread
         self.connect(thread.obj, SIGNAL("imageDone"), self.imageDone)
+
+        #Hold onto a reference to prevent PyQt from dereferencing
+        self._thread = thread
 
         self.pool.start(thread)
 
     def imageDone(self, image = None):
         if not image:
             logging.warning("Did not get back image from the resizer thread!")
-            self.CALC = False
             return
+
         logging.info("got signal, image is done %s", image)
+
         self.qimg = image
+        self._thread = None #Let the thread die
+
+        #self.emit(SIGNAL("updateUI"))
 
 class ThumbnailDelegate(QItemDelegate):
     def __init__(self, parent=None, *args):
@@ -113,7 +119,9 @@ class Thumbnails(QWidget):
 
         self._threadpool = QThreadPool.globalInstance()
 
-        self._threadpool.setMaxThreadCount(2)
+        # Let Qt decide the ideal thread count
+        # only override this with good reason, or debug purposes
+        ##self._threadpool.setMaxThreadCount(2)
 
         layout = QHBoxLayout()
         layout.addWidget(self._view)
