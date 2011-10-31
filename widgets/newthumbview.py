@@ -4,6 +4,7 @@ A widget for displaying a thumbnail grid
 """
 
 import sys
+import subprocess
 import logging
 
 from PyQt4 import *
@@ -94,7 +95,6 @@ class ThumbnailDelegate(QItemDelegate):
             adj_w = (option.rect.width() - imgrect.width()) / 2
             adj_h = (option.rect.height() - imgrect.height()) / 2
 
-
             option.rect.adjust(adj_w, adj_h, -adj_w, -adj_h)
             if border:
                 option.rect.adjust(-2, -2, 2, 2)
@@ -128,10 +128,18 @@ class ThumbnailGridView(QListView):
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
 
+        self.connect(self, SIGNAL("clicked (const QModelIndex&)"), self.click)
+
         # This does not seem to do anything
         # most likely because of QTBUG-7232
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
 
+    def click(self, index):
+        value = index.data(Qt.DisplayRole)
+        thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
+
+        logging.info("Thumbnail clicked %s", thumbnail.path)
+        subprocess.call(["/usr/bin/feh", thumbnail.path])
 
 class Thumbnails(QWidget):
     def __init__(self, parent=None):
