@@ -17,17 +17,23 @@ class ThumbnailCache():
     pass
 
 class Thumbnail(QObject):
-    def __init__(self, imagepath, pool):
+    def __init__(self, imagepath, pool, listview):
         QObject .__init__(self)
         self.path = imagepath
         self._thread = None
-        self.pool = pool
+
         self.qimg = None
 
-    def calcThumbnail(self):
+        self.pool = pool
+        self._qlistview = listview
+        self._index = None
+
+    def calcThumbnail(self, index):
         if self._thread:
             # Called during an already running calculation
             return
+
+        self._index = index
 
         thread = Thumbnailmaker(self.path)
         self.connect(thread.obj, SIGNAL("imageDone"), self.imageDone)
@@ -45,7 +51,8 @@ class Thumbnail(QObject):
         self.qimg = image
         self._thread = None #Let the thread die
 
-        #self.emit(SIGNAL("updateUI"))
+        # Tell the QListView widget to update the item
+        self._qlistview.update(self._index)
 
 class ThumbnailDelegate(QItemDelegate):
     def __init__(self, parent=None, *args):
@@ -60,8 +67,9 @@ class ThumbnailDelegate(QItemDelegate):
         value = index.data(Qt.DisplayRole)
 
         thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
+
         if not thumbnail.qimg:
-            thumbnail.calcThumbnail()
+            thumbnail.calcThumbnail(index)
 
         option.rect.adjust(0,0,-5,-5)
 
@@ -127,10 +135,9 @@ class Thumbnails(QWidget):
 
         self.setLayout(layout)
 
-
     def addImages(self, imagelist):
         logging.debug("Adding images to thumbview: %s", imagelist)
-        m = ThumbnailsModel([Thumbnail(i,self._threadpool) for i in imagelist])
+        m = ThumbnailsModel([Thumbnail(i, self._threadpool, self._view) for i in imagelist])
         self._view.setModel(m)
 
     def clearWidget(self):
