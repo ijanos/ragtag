@@ -134,8 +134,8 @@ class Thumbnails(QWidget):
         self._view.setModel(m)
 
     def clearWidget(self):
-        logging.warning("Implement widget clearing")
-        pass
+        m = ThumbnailsModel([])
+        self._view.setModel(m)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
