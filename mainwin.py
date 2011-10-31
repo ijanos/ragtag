@@ -1,28 +1,37 @@
 #-*- coding: utf-8 -*-
 
 import sys
+import logging
+
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from widgets.taglistwidget import TaglistPanel
 from widgets.tagbar import Tagbar
-from widgets.thumbnails import Thumbnails
+#from widgets.thumbnails import Thumbnails
+from widgets.newthumbview import Thumbnails
 from widgets.control import Controller
 
 class MainWindow(QFrame):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+
+        #Create widgets&layouts
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
 
+        splitter = QSplitter()
+        vboxw = QWidget()
 
         taglist = TaglistPanel()
         tagbar = Tagbar()
         thumbview = Thumbnails()
 
+
         ctrl = Controller()
 
+        #Connect signals
         self.connect(taglist._tagview, SIGNAL('tagClicked'), ctrl.tagClicked)
 
         self.connect(ctrl, SIGNAL('updateTags'), taglist.setTaglist)
@@ -33,8 +42,7 @@ class MainWindow(QFrame):
         self.connect(tagbar, SIGNAL('clearTags'), ctrl.reset)
         self.connect(tagbar, SIGNAL('clearTags'), thumbview.clearWidget)
 
-        splitter = QSplitter()
-        vboxw = QWidget()
+        #Add widgets to layouts
         vboxw.setLayout(vbox)
 
         splitter.addWidget(taglist)
@@ -49,9 +57,11 @@ class MainWindow(QFrame):
 
         self.setLayout(hbox)
 
+        #Start the application
         ctrl.start()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     app = QApplication(sys.argv)
     w = MainWindow()
     w.show()
