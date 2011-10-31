@@ -52,7 +52,6 @@ class Thumbnail(QObject):
 class ThumbnailDelegate(QItemDelegate):
     def __init__(self, parent=None, *args):
         QItemDelegate.__init__(self, parent, *args)
-        self._img = None
 
     def drawImage():
         pass
