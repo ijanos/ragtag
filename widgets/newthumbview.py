@@ -42,8 +42,6 @@ class Thumbnail(QObject):
             logging.warning("Did not get back image from the resizer thread!")
             return
 
-        logging.info("got signal, image is done %s", image)
-
         self.qimg = image
         self._thread = None #Let the thread die
 
