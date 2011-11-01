@@ -57,5 +57,5 @@ def processDir(pathtodir):
     traverseDir(".", extfilter, f)
 
 if __name__=="__main__":
-    dir1 = "pic"
+    dir1 = sys.argv[1]
     processDir(dir1)
