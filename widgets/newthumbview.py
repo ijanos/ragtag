@@ -139,7 +139,9 @@ class ThumbnailGridView(QListView):
         thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
 
         logging.info("Thumbnail clicked %s", thumbnail.path)
-        subprocess.call(["/usr/bin/feh", thumbnail.path])
+
+        # TODO get my own image viewer, till then why not use feh
+        subprocess.call(["/usr/bin/feh", "-F", thumbnail.path])
 
 class Thumbnails(QWidget):
     def __init__(self, parent=None):
