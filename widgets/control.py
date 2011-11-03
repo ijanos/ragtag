@@ -1,5 +1,7 @@
 #-*- coding: utf-8 -*-
 
+import logging
+
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -58,10 +60,12 @@ class Controller(QWidget):
     def loadDB(self):
         filename = QFileDialog.getOpenFileName()
         if filename:
+            logging.info("Loading database: %s", str(filename))
             self.photoDB = PhotoDB(str(filename))
 
     def loadTags(self):
         taglist = self.photoDB.getTaglist()
+        logging.debug("list of tags: %s",taglist)
         self.emit(SIGNAL("updateTags"), taglist)
 
     def loadImgs(self):
@@ -82,7 +86,7 @@ class Controller(QWidget):
 
 
     def tagClicked(self, tagid, tagname):
-        """ 
+        """
         This slot fires when the user clicks a tag in the list
         """
         self.emit(SIGNAL('addTag'), tagid, tagname) #add tag to strip

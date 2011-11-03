@@ -5,6 +5,7 @@ Database absctraction
 
 import os.path
 import sqlite3
+import logging
 
 class PhotoDB():
     def __init__(self, filename):
@@ -80,10 +81,10 @@ class PhotoDB():
 
     def storePhoto(self, dirid, filepath, tags):
         '''Store a photo with tags into the database'''
-        print "recece", dirid, filepath, tags
         self.cursor.execute('INSERT INTO images(dirid, path) VALUES (?,?);',
                 (dirid,filepath))
         imgid = self.cursor.lastrowid
+        logging.info("processing tags, imgeid: %s, path: %s", imgid, filepath)
         for tag in tags:
             tagid = self.lookupTag(tag)
             self.cursor.execute(

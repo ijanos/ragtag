@@ -6,6 +6,7 @@ Parse image files and store their metadata in the database
 import sys
 import os
 import os.path
+import logging
 
 import pyexiv2
 
@@ -57,5 +58,6 @@ def processDir(pathtodir):
     traverseDir(".", extfilter, f)
 
 if __name__=="__main__":
+    logging.basicConfig(level=logging.DEBUG)
     dir1 = sys.argv[1]
     processDir(dir1)
