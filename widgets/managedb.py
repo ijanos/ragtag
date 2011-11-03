@@ -91,6 +91,9 @@ class PhotoDB():
                 'INSERT OR REPLACE INTO xtagimg(tagid,imgid) VALUES (?,?)',
                 (tagid, imgid))
 
+    def commit(self):
+        self.connection.commit()
+
 
     def getPhotosByTagIDs(self, tagidlist):
         idlist = ','.join([str(x) for x in tagidlist])

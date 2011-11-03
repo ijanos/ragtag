@@ -10,7 +10,7 @@ import logging
 
 import pyexiv2
 
-from managedb import PhotoDB
+from widgets.managedb import PhotoDB
 
 photos = PhotoDB('testdb')
 photos.create_tables()
@@ -56,6 +56,7 @@ def processDir(pathtodir):
         (_, taglist) = getMetadata(filepath)
         photos.storePhoto(dirid, filepath, taglist)
     traverseDir(".", extfilter, f)
+    photos.commit()
 
 if __name__=="__main__":
     logging.basicConfig(level=logging.DEBUG)
