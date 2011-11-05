@@ -13,9 +13,16 @@ from widgets.thumbnails import Thumbnails
 from widgets.control import Controller
 
 
-class MainWindow(QFrame):
+class MainWindow(QMainWindow):
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+        QMainWindow.__init__(self, parent)
+        centralWidget = CentralWidget()
+        self.setCentralWidget(centralWidget)
+
+
+class CentralWidget(QFrame):
+    def __init__(self, parent=None):
+        QFrame.__init__(self, parent)
 
         #Create widgets&layouts
         hbox = QHBoxLayout()
