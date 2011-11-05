@@ -1,13 +1,15 @@
 #-*- coding: utf-8 -*-
 
 import sys
+
 from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+
 class MyListItem(QListWidgetItem):
     """ Extend QListWidgetItem with some information about the tag"""
-    def __init__(self, tagid, name, weight, parent = None):
+    def __init__(self, tagid, name, weight, parent=None):
         QListWidgetItem.__init__(self, parent)
         self._name = name
         self._tagid = tagid
@@ -15,12 +17,13 @@ class MyListItem(QListWidgetItem):
 
         self.setText(unicode(name, encoding='utf-8'))
 
+
 class MyTaglistWidget(QListWidget):
     """
     QListWidget extended with filter capabilites and it can read
     my tagdata tuple
     """
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QListWidget.__init__(self, parent)
         self.setAlternatingRowColors(True)
         self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'), self.clicked)

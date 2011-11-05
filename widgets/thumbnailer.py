@@ -7,8 +7,9 @@ from PyQt4.QtCore import *
 
 from PIL import Image, ImageQt
 
+
 class Thumbnailmaker(QRunnable):
-    def __init__(self, filename, width, height, parent = None):
+    def __init__(self, filename, width, height, parent=None):
         QRunnable.__init__(self)
         self.filename = filename
         self._w = width
@@ -20,7 +21,7 @@ class Thumbnailmaker(QRunnable):
     def run(self):
         img = Image.open(self.filename)
 
-        img.thumbnail( (self._w, self._h), Image.ANTIALIAS )
+        img.thumbnail((self._w, self._h), Image.ANTIALIAS)
 
         thumb = ImageQt.ImageQt(img)
 

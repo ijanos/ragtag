@@ -8,6 +8,7 @@ from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+
 class Tagbar(QWidget):
     def __init__(self):
         QWidget.__init__(self, None)
@@ -32,7 +33,6 @@ class Tagbar(QWidget):
         hbox.insertStretch(-1)
         hbox.addWidget(clearbutton)
         self.setLayout(hbox)
-
 
     def clearTags(self):
         self.emit(SIGNAL('clearTags'))

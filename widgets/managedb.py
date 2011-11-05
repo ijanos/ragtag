@@ -7,6 +7,7 @@ import os.path
 import sqlite3
 import logging
 
+
 class PhotoDB():
     def __init__(self, filename):
         (self.cursor, self.connection) = self.initDB(filename)
@@ -52,7 +53,6 @@ class PhotoDB():
         '''
         self.cursor.executescript(sqlscript)
         self.connection.commit()
-
 
     def lookupDir(self, path):
         """
@@ -135,7 +135,7 @@ class PhotoDB():
         filterlist = ','.join([str(x) for x in tagfilter])
         sqlquery='''
           SELECT id,name,count(id) as used FROM tags, xtagimg on xtagimg.tagid = id
-	      WHERE xtagimg.imgid IN (%s)
+          WHERE xtagimg.imgid IN (%s)
           AND xtagimg.tagid NOT IN (%s)
           GROUP BY id
           ORDER BY count(id) DESC
@@ -147,7 +147,7 @@ class PhotoDB():
             result.append(row)
         return result
 
-# get the list of pictures            
+# get the list of pictures
 #SELECT  dirs.path, images.path FROM dirs, images
 #WHERE dirs.id = images.dirid
 

@@ -36,7 +36,7 @@ def storePhoto(dirid, filepath):
 
 def traverseDir(directory, extfilter, fun):
     """
-    Walk the directory and its subdirectories and look for files 
+    Walk the directory and its subdirectories and look for files
     ending with extfilter and call fun on them
     """
     for root, dirs, files in os.walk(directory):

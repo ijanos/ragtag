@@ -13,6 +13,7 @@ from widgets.tagbar import Tagbar
 from widgets.newthumbview import Thumbnails
 from widgets.control import Controller
 
+
 class MainWindow(QFrame):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -27,7 +28,6 @@ class MainWindow(QFrame):
         taglist = TaglistPanel()
         tagbar = Tagbar()
         thumbview = Thumbnails()
-
 
         ctrl = Controller()
 

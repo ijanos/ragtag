@@ -17,6 +17,7 @@ from thumbnailer import Thumbnailmaker
 class ThumbnailCache():
     pass
 
+
 class Thumbnail(QObject):
     def __init__(self, imagepath, pool, listview):
         QObject .__init__(self)
@@ -44,17 +45,18 @@ class Thumbnail(QObject):
 
         self.pool.start(thread)
 
-    def imageDone(self, image = None):
+    def imageDone(self, image=None):
         if not image:
             logging.warning("Did not get back image from the resizer thread!")
             return
 
         self.qimg = image
-        self._thread = None #Let the thread die
+        self._thread = None  # Let the thread die
 
         # Tell the QListView widget to update the item that will
         # hold the freshly calculated thumbnail
         self._qlistview.update(self._index)
+
 
 class ThumbnailDelegate(QItemDelegate):
     def __init__(self, parent=None, *args):
@@ -68,23 +70,26 @@ class ThumbnailDelegate(QItemDelegate):
 
         border = True
 
-        option.rect.adjust(0,0,-2,-2)
+        option.rect.adjust(0, 0, -2, -2)
 
-        painter.setPen(QColor(200,200,200))
+        painter.setPen(QColor(200, 200, 200))
         if option.state & QStyle.State_Selected:
             painter.setBrush(QBrush(Qt.red))
         else:
             painter.setBrush(QBrush(Qt.white))
 
-        option.rect.adjust(2,2,-2,-2)
+        option.rect.adjust(2, 2, -2, -2)
 
         value = index.data(Qt.DisplayRole)
 
-        thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
+        # Convert QVariant to a Thumbnail instance
+        thumbnail = value.toPyObject()
 
         if not thumbnail.qimg:
-            thumbnail.calcThumbnail(index, option.rect.width(), option.rect.height())
-            painter.setPen(QColor(0,0,0))
+            thumbnail.calcThumbnail(index,
+                                    option.rect.width(),
+                                    option.rect.height())
+            painter.setPen(QColor(0, 0, 0))
             painter.drawText(option.rect, Qt.AlignCenter, "Loading...")
         else:
             imgrect = thumbnail.qimg.rect()
@@ -101,12 +106,11 @@ class ThumbnailDelegate(QItemDelegate):
                 painter.drawRect(option.rect)
                 option.rect.adjust(2, 2, -2, -2)
             painter.drawPixmap(option.rect, pixmap)
-
-
         painter.restore()
 
     def sizeHint(self, model, index):
-        return QSize(180,180)
+        return QSize(180, 180)
+
 
 class ThumbnailsModel(QAbstractListModel):
     def __init__(self, thumbnailpaths, parent=None, *args):
@@ -122,13 +126,15 @@ class ThumbnailsModel(QAbstractListModel):
         else:
             return QVariant()
 
+
 class ThumbnailGridView(QListView):
     def __init__(self, parent=None):
         QListView.__init__(self, parent)
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
 
-        self.connect(self, SIGNAL("activated (const QModelIndex&)"), self.click)
+        self.connect(self,
+                     SIGNAL("activated (const QModelIndex&)"), self.click)
 
         # This does not seem to do anything
         # most likely because of QTBUG-7232
@@ -136,12 +142,13 @@ class ThumbnailGridView(QListView):
 
     def click(self, index):
         value = index.data(Qt.DisplayRole)
-        thumbnail = value.toPyObject() #Convert QVariant to a Thumbnail instance
+        thumbnail = value.toPyObject()
 
         logging.info("Thumbnail clicked %s", thumbnail.path)
 
         # TODO get my own image viewer, till then why not use feh
         subprocess.call(["/usr/bin/feh", "-F", thumbnail.path])
+
 
 class Thumbnails(QWidget):
     def __init__(self, parent=None):
@@ -160,13 +167,14 @@ class Thumbnails(QWidget):
         layout = QHBoxLayout()
         layout.addWidget(self._view)
 
-        self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.setLayout(layout)
 
     def addImages(self, imagelist):
         logging.debug("Adding images to thumbview: %s", imagelist)
-        m = ThumbnailsModel([Thumbnail(i, self._threadpool, self._view) for i in imagelist])
+        m = ThumbnailsModel(
+               [Thumbnail(i, self._threadpool, self._view) for i in imagelist])
         self._view.setModel(m)
 
     def clearWidget(self):

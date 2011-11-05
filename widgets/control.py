@@ -8,6 +8,7 @@ from PyQt4.QtGui import *
 
 from managedb import PhotoDB
 
+
 class Controller(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -47,7 +48,7 @@ class Controller(QWidget):
         self.setLayout(layout)
 
     def start(self):
-        self.photoDB = PhotoDB('testdb') #XXX debug value
+        self.photoDB = PhotoDB('testdb')  # XXX debug value
         self.loadTags()
 
     def reset(self):
@@ -55,7 +56,7 @@ class Controller(QWidget):
         self.filterShownTags()
 
     def createGUI(self):
-        pass #TODO
+        pass  #TODO
 
     def loadDB(self):
         filename = QFileDialog.getOpenFileName()
@@ -65,40 +66,43 @@ class Controller(QWidget):
 
     def loadTags(self):
         taglist = self.photoDB.getTaglist()
-        logging.debug("list of tags: %s",taglist)
+        logging.debug("list of tags: %s", taglist)
         self.emit(SIGNAL("updateTags"), taglist)
 
     def loadImgs(self):
-        # TODO empty prevoius images
-        tagidlist = [tagid for (tagid, _) in self.currentTags] # extract the IDs
+        # extract the IDs
+        tagidlist = [tagid for (tagid, _) in self.currentTags]
         self.currentImages = self.photoDB.getPhotosByTagIDs(tagidlist)
-        imgpathlist = [p for (_, p) in self.currentImages] # extract path from tuple
+        # extract path from tuple
+        imgpathlist = [p for (_, p) in self.currentImages]
         self.emit(SIGNAL('addPhotos'), imgpathlist)
 
     def filterShownTags(self):
-        if not self.currentTags: #if the list is empty then show all tags
+        if not self.currentTags:  # if the list is empty then show all tags
             self.loadTags()
             return
-        imgidList = [i for (i, _) in self.currentImages] # extract id from tuple
-        tagfilter = [tagid for (tagid, _) in self.currentTags] # extract the IDs
-        filteredtags = self.photoDB.getTagsForImages(imgidList,tagfilter)
+        # extract id from tuple
+        imgidList = [i for (i, _) in self.currentImages]
+        # extract the IDs
+        tagfilter = [tagid for (tagid, _) in self.currentTags]
+        filteredtags = self.photoDB.getTagsForImages(imgidList, tagfilter)
         self.emit(SIGNAL("updateTags"), filteredtags)
-
 
     def tagClicked(self, tagid, tagname):
         """
         This slot fires when the user clicks a tag in the list
         """
-        self.emit(SIGNAL('addTag'), tagid, tagname) #add tag to strip
-        self.currentTags.append((tagid,tagname)) #update state
-        self.loadImgs() #list photos according to state
-        self.filterShownTags() #reduce list of tags according to state
+        self.emit(SIGNAL('addTag'), tagid, tagname)  #add tag to strip
+        self.currentTags.append((tagid, tagname))  #update state
+        self.loadImgs()  #list photos according to state
+        self.filterShownTags()  #reduce list of tags according to state
 
     def tagRemoved(self, tagid):
         """
         This slot fires when a tag is removed
         """
         #remove tag with tagid from the currenttags list
-        self.currentTags = filter(lambda (tid,tn): tid != tagid,self.currentTags)
-        self.loadImgs() #list photos according to state
-        self.filterShownTags() #reduce list of tags according to state
+        self.currentTags = filter(
+                lambda (tid, tn): tid != tagid, self.currentTags)
+        self.loadImgs()  #list photos according to state
+        self.filterShownTags()  #reduce list of tags according to state
