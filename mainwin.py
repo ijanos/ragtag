@@ -9,7 +9,6 @@ from PyQt4.QtGui import *
 
 from widgets.taglistwidget import TaglistPanel
 from widgets.tagbar import Tagbar
-#from widgets.thumbnails import Thumbnails
 from widgets.newthumbview import Thumbnails
 from widgets.control import Controller
 
