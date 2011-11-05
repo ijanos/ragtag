@@ -20,11 +20,14 @@ class PhotoDB():
     def initDB(self, filename):
         '''Initialize the database'''
         db_connection = sqlite3.connect(filename)
-        db_connection.text_factory = str #be unicode friendly
+        db_connection.text_factory = str  # be unicode friendly
         return (db_connection.cursor(), db_connection)
 
     def create_tables(self):
-        '''Create the tables in the database. This will erease any previous data!'''
+        '''
+        Create the tables in the database.
+        This will erease any previous data!
+        '''
         sqlscript = '''
             DROP TABLE IF EXISTS tags;
             DROP TABLE IF EXISTS xtagimg;
@@ -76,13 +79,14 @@ class PhotoDB():
         if result:
             return result[0]
         else:
-            self.cursor.execute(''' INSERT INTO tags(name) VALUES (?); ''', (tagname,))
+            self.cursor.execute(''' INSERT INTO tags(name) VALUES (?); ''',
+                    (tagname,))
             return self.cursor.lastrowid
 
     def storePhoto(self, dirid, filepath, tags):
         '''Store a photo with tags into the database'''
         self.cursor.execute('INSERT INTO images(dirid, path) VALUES (?,?);',
-                (dirid,filepath))
+                (dirid, filepath))
         imgid = self.cursor.lastrowid
         logging.info("processing tags, imgeid: %s, path: %s", imgid, filepath)
         for tag in tags:
@@ -108,14 +112,15 @@ class PhotoDB():
         self.cursor.execute(sqlquery)
         result = []
         for (imgid, path1, path2) in self.cursor:
-            result.append((imgid, os.path.join(path1,path2)))
+            result.append((imgid, os.path.join(path1, path2)))
         return result
 
     def getTaglist(self):
         '''Return tag id, tagname and the usage frequency'''
         # TODO specify different orders: frequency/lexical
         sqlquery = '''
-            SELECT id,name,count(id) as used FROM tags, xtagimg on xtagimg.tagid = id
+            SELECT id,name,count(id) as used
+               FROM tags, xtagimg on xtagimg.tagid = id
             GROUP BY id
             ORDER BY count(id) DESC
         '''
@@ -129,8 +134,9 @@ class PhotoDB():
         ''' which tags are used with the images '''
         idlist = ','.join([str(x) for x in imgIDlist])
         filterlist = ','.join([str(x) for x in tagfilter])
-        sqlquery='''
-          SELECT id,name,count(id) as used FROM tags, xtagimg on xtagimg.tagid = id
+        sqlquery = '''
+          SELECT id,name,count(id) as used
+              FROM tags, xtagimg on xtagimg.tagid = id
           WHERE xtagimg.imgid IN (%s)
           AND xtagimg.tagid NOT IN (%s)
           GROUP BY id
@@ -142,19 +148,6 @@ class PhotoDB():
         for row in self.cursor:
             result.append(row)
         return result
-
-# get the list of pictures
-#SELECT  dirs.path, images.path FROM dirs, images
-#WHERE dirs.id = images.dirid
-
-
-# SELECT images.path, tags.name from images,xtagimg,tags
-# where xtagimg.tagid = 2 and xtagimg.imgid = images.id and xtagimg.tagid = tags.id
-
-# select images.path from images, xtagimg on xtagimg.imgid=images.id
-# where tagid in (1,2)
-# GROUP BY imgid
-# HAVING COUNT( imgid ) = 2
 
 if __name__ == "__main__":
     photos = PhotoDB('testdb')
