@@ -56,7 +56,6 @@ def processDir(pathtodir):
         (_, taglist) = getMetadata(filepath)
         photos.storePhoto(dirid, filepath, taglist)
     traverseDir(".", extfilter, f)
-    photos.commit()
 
 if __name__=="__main__":
     logging.basicConfig(level=logging.DEBUG)

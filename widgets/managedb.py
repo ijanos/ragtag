@@ -13,6 +13,10 @@ class PhotoDB():
         (self.cursor, self.connection) = self.initDB(filename)
         #XXX check if tables are available
 
+    def __del__(self):
+        logging.debug("Destroying photo database object")
+        self.connection.commit()
+
     def initDB(self, filename):
         '''Initialize the database'''
         db_connection = sqlite3.connect(filename)
@@ -52,7 +56,6 @@ class PhotoDB():
             );
         '''
         self.cursor.executescript(sqlscript)
-        self.connection.commit()
 
     def lookupDir(self, path):
         """
@@ -65,9 +68,7 @@ class PhotoDB():
             return result[0]
         else:
             self.cursor.execute("INSERT INTO dirs(path) VALUES (?)", (path,))
-            self.connection.commit()
             return self.cursor.lastrowid
-
 
     def lookupTag(self, tagname):
         self.cursor.execute('SELECT id FROM tags WHERE name = ?', (tagname,))
@@ -76,7 +77,6 @@ class PhotoDB():
             return result[0]
         else:
             self.cursor.execute(''' INSERT INTO tags(name) VALUES (?); ''', (tagname,))
-            self.connection.commit()
             return self.cursor.lastrowid
 
     def storePhoto(self, dirid, filepath, tags):
@@ -90,10 +90,6 @@ class PhotoDB():
             self.cursor.execute(
                 'INSERT OR REPLACE INTO xtagimg(tagid,imgid) VALUES (?,?)',
                 (tagid, imgid))
-
-    def commit(self):
-        self.connection.commit()
-
 
     def getPhotosByTagIDs(self, tagidlist):
         idlist = ','.join([str(x) for x in tagidlist])
