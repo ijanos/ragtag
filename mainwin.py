@@ -16,13 +16,41 @@ from widgets.control import Controller
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
-        centralWidget = CentralWidget()
+
+        self.control = Controller()
+
+        centralWidget = CentralWidget(self.control)
         self.setCentralWidget(centralWidget)
 
+        self.createActions()
+        self.createMenus()
+
+        self.control.start()
+
+    def createActions(self):
+        self.exitAct = QAction("E&xit", self)
+        self.exitAct.setShortcut("Ctrl+Q")
+        self.exitAct.setStatusTip("Exit the application")
+        self.connect(self.exitAct,
+                SIGNAL("triggered()"), self, SLOT("close()"))
+
+        self.openDBAct = QAction("&Open database...", self)
+        self.openDBAct.setShortcut("Ctrl+O")
+        self.openDBAct.setStatusTip("Open a database file")
+        self.connect(self.openDBAct,
+                SIGNAL("triggered()"), self.control.loadDB)
+
+    def createMenus(self):
+        self.fileMenu = self.menuBar().addMenu("&File")
+        self.fileMenu.addAction(self.openDBAct)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(self.exitAct)
 
 class CentralWidget(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, ctrl, parent=None):
         QFrame.__init__(self, parent)
+
+        self.setContentsMargins(0, 0, 0, 0)
 
         #Create widgets&layouts
         hbox = QHBoxLayout()
@@ -34,8 +62,6 @@ class CentralWidget(QFrame):
         taglist = TaglistPanel()
         tagbar = Tagbar()
         thumbview = Thumbnails()
-
-        ctrl = Controller()
 
         #Connect signals
         self.connect(taglist._tagview, SIGNAL('tagClicked'), ctrl.tagClicked)
@@ -56,15 +82,12 @@ class CentralWidget(QFrame):
 
         hbox.addWidget(splitter)
 
-        vbox.addWidget(ctrl)
-
         vbox.addWidget(tagbar)
         vbox.addWidget(thumbview)
 
         self.setLayout(hbox)
 
         #Start the application
-        ctrl.start()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

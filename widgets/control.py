@@ -9,43 +9,14 @@ from PyQt4.QtGui import *
 from managedb import PhotoDB
 
 
-class Controller(QWidget):
+class Controller(QObject):
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+        QObject.__init__(self, parent)
 
         self.photoDB = None
 
         self.currentTags = []
         self.currentImages = []
-
-        layout = QHBoxLayout()
-
-        txt = QLabel("Hello World")
-
-        bLoad = QPushButton("Load database")
-        bTags = QPushButton("Load tags")
-        bImgs = QPushButton("load images")
-        bReset = QPushButton("reset")
-        bQuit = QPushButton("Quit")
-
-        layout.addWidget(txt)
-
-        layout.insertStretch(-1)
-
-        layout.addWidget(bLoad)
-        layout.addWidget(bTags)
-        layout.addWidget(bImgs)
-        layout.addWidget(bReset)
-        layout.addWidget(bQuit)
-
-        self.connect(bQuit, SIGNAL('clicked()'),
-                     QtGui.qApp, QtCore.SLOT("quit()"))
-        self.connect(bLoad, SIGNAL('clicked()'), self.loadDB)
-        self.connect(bTags, SIGNAL('clicked()'), self.loadTags)
-        self.connect(bImgs, SIGNAL('clicked()'), self.loadImgs)
-        self.connect(bReset, SIGNAL('clicked()'), self.reset)
-
-        self.setLayout(layout)
 
     def start(self):
         self.photoDB = PhotoDB('testdb')  # XXX debug value
@@ -55,14 +26,14 @@ class Controller(QWidget):
         self.currentTags = []
         self.filterShownTags()
 
-    def createGUI(self):
-        pass  #TODO
-
     def loadDB(self):
         filename = QFileDialog.getOpenFileName()
         if filename:
             logging.info("Loading database: %s", str(filename))
             self.photoDB = PhotoDB(str(filename))
+        else:
+            return
+        self.loadTags()
 
     def loadTags(self):
         taglist = self.photoDB.getTaglist()
