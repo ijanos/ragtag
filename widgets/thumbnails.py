@@ -109,7 +109,7 @@ class ThumbnailDelegate(QItemDelegate):
         painter.restore()
 
     def sizeHint(self, model, index):
-        return QSize(180, 180)
+        return QSize(160, 160)
 
 
 class ThumbnailsModel(QAbstractListModel):
