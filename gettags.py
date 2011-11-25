@@ -24,16 +24,6 @@ def getMetadata(f):
         tags = []
     return (metadata, tags)
 
-def getTagList(filepath):
-    (_, taglist) = getMetadata(filepath)
-    for tag in taglist:
-        photos.lookupTag(tag)
-    print filepath, taglist
-
-def storePhoto(dirid, filepath):
-    (_, taglist) = getMetadata(filepath)
-    photos.storePhoto(filepath,taglist)
-
 def traverseDir(directory, extfilter, fun):
     """
     Walk the directory and its subdirectories and look for files
