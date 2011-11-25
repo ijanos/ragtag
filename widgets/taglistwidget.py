@@ -72,7 +72,7 @@ class TaglistPanel(QWidget):
         self._tagview.setTaglist(taglist)
 
     def sizeHint(self):
-        return QSize(90,16777215)
+        return QSize(35,16777215)
 
 
 if __name__ == '__main__':
