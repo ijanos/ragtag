@@ -18,11 +18,23 @@ photos.create_tables()
 def getMetadata(f):
     metadata = pyexiv2.ImageMetadata(f)
     metadata.read()
+    # get the tags from the image
     if 'Iptc.Application2.Keywords' in metadata.iptc_keys:
         tags = metadata['Iptc.Application2.Keywords'].value
     else:
         tags = []
-    return (metadata, tags)
+
+    # try to get a proper date/time from the image
+    datetime = None
+    for dateattr in ['Exif.Image.DateTimeOriginal', 'Exif.Image.DateTime']:
+        try:
+            datetime = metadata[dateattr].value
+            break
+        except KeyError:
+            pass
+    if not datetime:
+        logging.debug("Could not find datetime in file")
+    return (datetime, tags)
 
 def traverseDir(directory, extfilter, fun):
     """
@@ -43,8 +55,8 @@ def processDir(pathtodir):
     dirid = photos.lookupDir(fullpath)
     extfilter = ['jpg', 'jpeg']
     def f(filepath):
-        (_, taglist) = getMetadata(filepath)
-        photos.storePhoto(dirid, filepath, taglist)
+        (datetime, taglist) = getMetadata(filepath)
+        photos.storePhoto(dirid, filepath, datetime, taglist)
     traverseDir(".", extfilter, f)
 
 if __name__=="__main__":

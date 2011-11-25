@@ -55,6 +55,7 @@ class PhotoDB():
                 "id" INTEGER PRIMARY KEY,
                 "dirid" INTEGER,
                 "path" TEXT,
+                "datetime" DATETIME,
                 FOREIGN KEY(dirid) REFERENCES dirs(id)
             );
         '''
@@ -83,10 +84,10 @@ class PhotoDB():
                     (tagname,))
             return self.cursor.lastrowid
 
-    def storePhoto(self, dirid, filepath, tags):
+    def storePhoto(self, dirid, filepath, datetime, tags):
         '''Store a photo with tags into the database'''
-        self.cursor.execute('INSERT INTO images(dirid, path) VALUES (?,?);',
-                (dirid, filepath))
+        self.cursor.execute('INSERT INTO images(dirid, datetime, path) VALUES (?,?,?);',
+                (dirid, datetime, filepath))
         imgid = self.cursor.lastrowid
         logging.info("processing tags, imgeid: %s, path: %s", imgid, filepath)
         for tag in tags:
@@ -106,6 +107,7 @@ class PhotoDB():
           WHERE tagid IN (%s)
           GROUP BY imgid
           HAVING COUNT( imgid ) = %s
+          ORDER BY datetime
         ''' % (idlist, idlistlen)
         # prepare statement cannot really work here, but no problem
         # the user has direct access to the databse anyways.
