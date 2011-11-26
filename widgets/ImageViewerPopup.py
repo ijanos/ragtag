@@ -12,7 +12,7 @@ from PyQt4 import QtGui
 
 class ImageViewerPopup(QtGui.QLabel):
     def __init__(self):
-        QtGui.QLabel.__init__(self, flags = QtCore.Qt.FramelessWindowHint)
+        QtGui.QLabel.__init__(self, flags=QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle('Image Viewer')
 
         self._imagepath = None
@@ -27,11 +27,11 @@ class ImageViewerPopup(QtGui.QLabel):
                     desktopGeo.height() - MARGIN)
 
         #move the window to the center of the screen
-        frect = self.frameGeometry();
-        frect.moveCenter(desktopGeo.center());
+        frect = self.frameGeometry()
+        frect.moveCenter(desktopGeo.center())
         self.move(frect.topLeft())
 
-        self.installEventFilter(self);
+        self.installEventFilter(self)
 
     def setImage(self, imagepath):
         title = "Image Viewer - " + imagepath
