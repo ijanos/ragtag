@@ -12,6 +12,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from thumbnailer import Thumbnailmaker
+from ImageViewerPopup import ImageViewerPopup
 
 
 class ThumbnailCache():
@@ -127,8 +128,11 @@ class ThumbnailsModel(QAbstractListModel):
 class ThumbnailGridView(QListView):
     def __init__(self, parent=None):
         QListView.__init__(self, parent)
+
         self.setViewMode(QListView.IconMode)
         self.setResizeMode(QListView.Adjust)
+
+        self.imageviewpopup = ImageViewerPopup()
 
         self.connect(self,
                      SIGNAL("activated (const QModelIndex&)"), self.click)
@@ -143,8 +147,8 @@ class ThumbnailGridView(QListView):
 
         logging.info("Thumbnail clicked %s", thumbnail.path)
 
-        # TODO get my own image viewer, till then why not use feh
-        subprocess.call(["/usr/bin/feh", "-F", thumbnail.path])
+        self.imageviewpopup.setImage(thumbnail.path)
+        self.imageviewpopup.show()
 
 
 class Thumbnails(QWidget):
