@@ -62,9 +62,6 @@ class ThumbnailDelegate(QItemDelegate):
     def __init__(self, parent=None, *args):
         QItemDelegate.__init__(self, parent, *args)
 
-    def drawImage():
-        pass
-
     def paint(self, painter, option, index):
         painter.save()
 
