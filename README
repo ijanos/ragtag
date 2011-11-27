@@ -9,4 +9,3 @@ Requirements
 Python
 PyQt4 (maybe with PySide support in the future)
 pyexiv2
-PIL

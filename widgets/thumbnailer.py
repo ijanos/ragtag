@@ -2,10 +2,8 @@
 
 import logging
 
-from PyQt4 import *
-from PyQt4.QtCore import *
-
-from PIL import Image, ImageQt
+from PyQt4 import QtGui
+from PyQt4.QtCore import Qt, QRunnable, QObject, SIGNAL
 
 
 class Thumbnailmaker(QRunnable):
@@ -19,11 +17,20 @@ class Thumbnailmaker(QRunnable):
         self.obj = QObject()
 
     def run(self):
-        img = Image.open(self.filename)
-
-        img.thumbnail((self._w, self._h), Image.ANTIALIAS)
-
-        thumb = ImageQt.ImageQt(img)
+        """
+        Method run by the worker thread, responsible for downscaling
+        one image to thumbnail size
+        """
+        # Use two way scaling of the image.
+        # The result will be calculated faster than a one-way
+        # SmoothTransformation but will be as nice.
+        thumb = QtGui.QImage(self.filename)\
+                .scaled(self._w * 4, self._h * 4,
+                        Qt.KeepAspectRatio,
+                        Qt.FastTransformation)\
+                .scaled(self._w, self._h,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation)
 
         logging.info("creating thumbnail image for %s is done", self.filename)
         self.obj.emit(SIGNAL("imageDone"), thumb)
