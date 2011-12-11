@@ -20,14 +20,15 @@ class ThumbnailCache():
 
 
 class Thumbnail(QObject):
-    def __init__(self, imagepath, pool, listview):
+    def __init__(self, imagepath, listview):
         QObject .__init__(self)
         self.path = imagepath
         self._thread = None
 
         self.qimg = None
 
-        self.pool = pool
+        self.pool = QThreadPool.globalInstance()
+
         self._qlistview = listview
         self._index = None
 
@@ -189,10 +190,10 @@ class Thumbnails(QWidget):
         d = ThumbnailDelegate()
         self._view.setItemDelegate(d)
 
-        self._threadpool = QThreadPool.globalInstance()
 
         # Let Qt decide the ideal thread count
         # only override this with good reason, or debug purposes
+        ##self._threadpool = QThreadPool.globalInstance()
         ##self._threadpool.setMaxThreadCount(2)
 
         layout = QHBoxLayout()
@@ -207,7 +208,7 @@ class Thumbnails(QWidget):
     def addImages(self, imagelist):
         logging.debug("Adding images to thumbview: %s", imagelist)
         m = ThumbnailsModel(
-               [Thumbnail(i, self._threadpool, self._view) for i in imagelist])
+               [Thumbnail(i, self._view) for i in imagelist])
         self._view.setModel(m)
 
     def clearWidget(self):
