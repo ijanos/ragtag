@@ -156,6 +156,10 @@ class ThumbnailGridView(QListView):
         self.connect(self.action1, SIGNAL("triggered()"), self.rightClick)
 
     def click(self, index):
+        """
+        Handle the click event on a thumbnail.
+        Show the imageviewer popup
+        """
         value = index.data(Qt.DisplayRole)
         thumbnail = value.toPyObject()
 
@@ -183,6 +187,15 @@ class ThumbnailGridView(QListView):
 
 
 class Thumbnails(QWidget):
+    """
+    This widget can display a list of images in a thumbnail grid
+
+    has two slots:
+        addImages: takes a list of strings, paths to images
+        clearWidget: remove the thumbnals, show empty the widget
+
+    emits no signals
+    """
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 

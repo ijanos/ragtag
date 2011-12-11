@@ -7,6 +7,9 @@ from PyQt4.QtCore import Qt, QRunnable, QObject, SIGNAL
 
 
 class Thumbnailmaker(QRunnable):
+    """
+    Worker thread for creating thumbnails
+    """
     def __init__(self, filename, width, height, parent=None):
         QRunnable.__init__(self)
         self.filename = filename
