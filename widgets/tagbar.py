@@ -43,7 +43,7 @@ class Tagbar(QWidget):
             # because items are being deleted during the loop
             widget = item.widget()
             widget.hide()
-            widget.close()
+            widget.destroy()
             self._buttons.removeItem(item)
 
     def addTag(self, tagid, tagname):
@@ -53,7 +53,7 @@ class Tagbar(QWidget):
         def clickfun():
             self.emit(SIGNAL('tagRemoved'), tagid)
             tagbutton.hide()
-            #TODO remove the button entirely
+            tagbutton.destroy()
 
         self.connect(tagbutton, SIGNAL('clicked()'), clickfun)
         self._buttons.addWidget(tagbutton)
