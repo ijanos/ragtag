@@ -196,6 +196,8 @@ class Thumbnails(QWidget):
         ##self._threadpool.setMaxThreadCount(2)
 
         layout = QHBoxLayout()
+        layout.setMargin(1)
+
         layout.addWidget(self._view)
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

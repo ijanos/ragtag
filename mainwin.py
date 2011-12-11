@@ -56,7 +56,11 @@ class CentralWidget(QFrame):
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
 
+        hbox.setMargin(1)
+        vbox.setMargin(1)
+
         splitter = QSplitter()
+
         vboxw = QWidget()
 
         taglist = TaglistPanel()

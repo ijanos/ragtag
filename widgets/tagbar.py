@@ -14,8 +14,10 @@ class Tagbar(QWidget):
         QWidget.__init__(self, None)
 
         hbox = QHBoxLayout()
+        hbox.setMargin(1)
+
         self._buttons = QHBoxLayout()
-        self._buttons.setContentsMargins(0,0,0,0)
+
         self._buttons.setMargin(0)
         self._buttons.setSpacing(1)
 #        self.setStyleSheet("background-color:yellow;"
