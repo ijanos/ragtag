@@ -137,9 +137,22 @@ class ThumbnailGridView(QListView):
         self.connect(self,
                      SIGNAL("activated (const QModelIndex&)"), self.click)
 
+        # TODO enable this
+        #self.addContextMenu()
+
         # This does not seem to do anything
         # most likely because of QTBUG-7232
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+
+    def addContextMenu(self):
+        """
+        Create & connect the QActions of the right-click menu
+        """
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+
+        self.action1 = QAction("Menu item1", self)
+        self.addAction(self.action1)
+        self.connect(self.action1, SIGNAL("triggered()"), self.rightClick)
 
     def click(self, index):
         value = index.data(Qt.DisplayRole)
@@ -149,6 +162,23 @@ class ThumbnailGridView(QListView):
 
         self.imageviewpopup.setImage(thumbnail.path)
         self.imageviewpopup.show()
+
+    def rightClick(self):
+        photo = self.currentIndexToPhoto()
+        print photo.path
+
+    def currentIndexToPhoto(self):
+        """
+        Convert current QModelIndex object to Photo
+        """
+        # Get the index of the currently selected photo
+        index = self.currentIndex()
+        # get the object of the currently selected photo
+        value = index.data(Qt.DisplayRole)
+        # Convert QVariant to a Photo instance
+        photo = value.toPyObject()
+
+        return photoobj
 
 
 class Thumbnails(QWidget):
