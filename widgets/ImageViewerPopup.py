@@ -10,14 +10,19 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 
-class ImageViewerPopup(QtGui.QLabel):
+class ImageViewerPopup(QtGui.QWidget):
     def __init__(self):
-        QtGui.QLabel.__init__(self, flags=QtCore.Qt.FramelessWindowHint)
+        QtGui.QWidget.__init__(self, flags=QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle('Image Viewer')
 
         self._imagepath = None
+        self.layout = QtGui.QVBoxLayout()
+        self.layout.setMargin(1)
+        self.setLayout(self.layout)
 
-        self.setAlignment(QtCore.Qt.AlignCenter)
+        self._scene = QtGui.QGraphicsScene()
+        self._view = QtGui.QGraphicsView(self._scene)
+        self.layout.addWidget(self._view)
 
         MARGIN = 40
 
@@ -37,14 +42,23 @@ class ImageViewerPopup(QtGui.QLabel):
         title = "Image Viewer - " + imagepath
         self.setWindowTitle(title)
         self._imagepath = imagepath
+
         self.fitImage()
 
     def fitImage(self):
         pixmap = QtGui.QPixmap(self._imagepath).scaled(
-                    self.width(), self.height(),
-                    QtCore.Qt.KeepAspectRatio
+                    self._view.size().width(),
+                    self._view.size().height(),
+                    QtCore.Qt.KeepAspectRatio,
+                    QtCore.Qt.SmoothTransformation
                 )
-        self.setPixmap(pixmap)
+
+        size_img = pixmap.size()
+        w = size_img.width()
+        h = size_img.height()
+        self._scene.clear()
+        self._scene.setSceneRect(0, 0, w, h)
+        self._scene.addPixmap(pixmap)
 
     def eventFilter(self, obj, event):
         """
@@ -75,6 +89,7 @@ class ImageViewerPopup(QtGui.QLabel):
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     w = ImageViewerPopup()
+    w.setImage("/tmp/testimage.jpg")
     w.show()
     app.exec_()
     sys.exit()
