@@ -7,9 +7,8 @@ import sys
 import subprocess
 import logging
 
-from PyQt4 import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4 import QtCore
+from PyQt4 import QtGui
 
 from thumbnailer import Thumbnailmaker
 from ImageViewerPopup import ImageViewerPopup
@@ -19,15 +18,15 @@ class ThumbnailCache():
     pass
 
 
-class Thumbnail(QObject):
+class Thumbnail(QtCore.QObject):
     def __init__(self, imagepath, listview):
-        QObject .__init__(self)
+        QtCore.QObject .__init__(self)
         self.path = imagepath
         self._thread = None
 
         self.qimg = None
 
-        self.pool = QThreadPool.globalInstance()
+        self.pool = QtCore.QThreadPool.globalInstance()
 
         self._qlistview = listview
         self._index = None
@@ -40,7 +39,7 @@ class Thumbnail(QObject):
         self._index = index
 
         thread = Thumbnailmaker(self.path, w, h)
-        self.connect(thread.obj, SIGNAL("imageDone"), self.imageDone)
+        self.connect(thread.obj, QtCore.SIGNAL("imageDone"), self.imageDone)
 
         #Hold onto a reference to prevent PyQt from dereferencing
         self._thread = thread
@@ -60,9 +59,9 @@ class Thumbnail(QObject):
         self._qlistview.update(self._index)
 
 
-class ThumbnailDelegate(QItemDelegate):
+class ThumbnailDelegate(QtGui.QItemDelegate):
     def __init__(self, parent=None, *args):
-        QItemDelegate.__init__(self, parent, *args)
+        QtGui.QItemDelegate.__init__(self, parent, *args)
 
     def paint(self, painter, option, index):
         painter.save()
@@ -71,15 +70,15 @@ class ThumbnailDelegate(QItemDelegate):
 
         option.rect.adjust(0, 0, -2, -2)
 
-        painter.setPen(QColor(200, 200, 200))
-        if option.state & QStyle.State_Selected:
-            painter.setBrush(QBrush(Qt.red))
+        painter.setPen(QtGui.QColor(200, 200, 200))
+        if option.state & QtGui.QStyle.State_Selected:
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.red))
         else:
-            painter.setBrush(QBrush(Qt.white))
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.white))
 
         option.rect.adjust(2, 2, -2, -2)
 
-        value = index.data(Qt.DisplayRole)
+        value = index.data(QtCore.Qt.DisplayRole)
 
         # Convert QVariant to a Thumbnail instance
         thumbnail = value.toPyObject()
@@ -88,11 +87,11 @@ class ThumbnailDelegate(QItemDelegate):
             thumbnail.calcThumbnail(index,
                                     option.rect.width(),
                                     option.rect.height())
-            painter.setPen(QColor(0, 0, 0))
-            painter.drawText(option.rect, Qt.AlignCenter, "Loading...")
+            painter.setPen(QtGui.QColor(0, 0, 0))
+            painter.drawText(option.rect, QtCore.Qt.AlignCenter, "Loading...")
         else:
             imgrect = thumbnail.qimg.rect()
-            pixmap = QPixmap()
+            pixmap = QtGui.QPixmap()
             pixmap.convertFromImage(thumbnail.qimg)
 
             # Adjust the image to the center both vertically and horizontally
@@ -108,70 +107,70 @@ class ThumbnailDelegate(QItemDelegate):
         painter.restore()
 
     def sizeHint(self, model, index):
-        return QSize(160, 160)
+        return QtCore.QSize(160, 160)
 
 
-class ThumbnailsModel(QAbstractListModel):
+class ThumbnailsModel(QtCore.QAbstractListModel):
     def __init__(self, thumbnailpaths, parent=None, *args):
-        QAbstractListModel.__init__(self, parent, *args)
+        QtCore.QAbstractListModel.__init__(self, parent, *args)
         self._list = thumbnailpaths
 
-    def rowCount(self, parent=QModelIndex()):
+    def rowCount(self, parent=QtCore.QModelIndex()):
         return len(self._list)
 
     def data(self, index, role):
-        if index.isValid() and role == Qt.DisplayRole:
-            return QVariant(self._list[index.row()])
-        elif index.isValid() and role == Qt.ToolTipRole:
+        if index.isValid() and role == QtCore.Qt.DisplayRole:
+            return QtCore.QVariant(self._list[index.row()])
+        elif index.isValid() and role == QtCore.Qt.ToolTipRole:
             # Show the path of the image as tooltip when the thumbnails is hovered
             return "<b>Image path:</b>\n" + self._list[index.row()].path
         else:
-            return QVariant()
+            return QtCore.QVariant()
 
 
-class ThumbnailGridView(QListView):
+class ThumbnailGridView(QtGui.QListView):
     def __init__(self, parent=None):
-        QListView.__init__(self, parent)
+        QtGui.QListView.__init__(self, parent)
 
-        self.setViewMode(QListView.IconMode)
+        self.setViewMode(QtGui.QListView.IconMode)
 
         # Reflow the image grid after resize
-        self.setResizeMode(QListView.Adjust)
+        self.setResizeMode(QtGui.QListView.Adjust)
 
         # All items uses the same size, this supposedly improves performance
         self.setUniformItemSizes(True)
 
         # Generate images from left to right
-        self.setFlow(QListView.LeftToRight)
+        self.setFlow(QtGui.QListView.LeftToRight)
 
         self.imageviewpopup = ImageViewerPopup()
 
         self.connect(self,
-                     SIGNAL("activated (const QModelIndex&)"), self.click)
+                     QtCore.SIGNAL("activated (const QModelIndex&)"), self.click)
 
         # TODO enable this
         #self.addContextMenu()
 
         # This does not seem to do anything
         # most likely because of QTBUG-7232
-        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setVerticalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
 
     def addContextMenu(self):
         """
         Create & connect the QActions of the right-click menu
         """
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
 
-        self.action1 = QAction("Menu item1", self)
+        self.action1 = QtGui.QAction("Menu item1", self)
         self.addAction(self.action1)
-        self.connect(self.action1, SIGNAL("triggered()"), self.rightClick)
+        self.connect(self.action1, QtCore.SIGNAL("triggered()"), self.rightClick)
 
     def click(self, index):
         """
         Handle the click event on a thumbnail.
         Show the imageviewer popup
         """
-        value = index.data(Qt.DisplayRole)
+        value = index.data(QtCore.Qt.DisplayRole)
         thumbnail = value.toPyObject()
 
         logging.info("Thumbnail clicked %s", thumbnail.path)
@@ -190,14 +189,14 @@ class ThumbnailGridView(QListView):
         # Get the index of the currently selected photo
         index = self.currentIndex()
         # get the object of the currently selected photo
-        value = index.data(Qt.DisplayRole)
+        value = index.data(QtCore.Qt.DisplayRole)
         # Convert QVariant to a Photo instance
-        photo = value.toPyObject()
+        photoobj = value.toPyObject()
 
         return photoobj
 
 
-class Thumbnails(QWidget):
+class Thumbnails(QtGui.QWidget):
     """
     This widget can display a list of images in a thumbnail grid
 
@@ -208,7 +207,7 @@ class Thumbnails(QWidget):
     emits no signals
     """
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent)
 
         self._view = ThumbnailGridView()
         d = ThumbnailDelegate()
@@ -220,12 +219,13 @@ class Thumbnails(QWidget):
         ##self._threadpool = QThreadPool.globalInstance()
         ##self._threadpool.setMaxThreadCount(2)
 
-        layout = QHBoxLayout()
+        layout = QtGui.QHBoxLayout()
         layout.setMargin(1)
 
         layout.addWidget(self._view)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                           QtGui.QSizePolicy.Expanding)
 
         self.setLayout(layout)
 

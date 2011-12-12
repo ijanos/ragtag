@@ -3,9 +3,8 @@
 import sys
 import logging
 
-from PyQt4 import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4 import QtCore
+from PyQt4 import QtGui
 
 from widgets.taglistwidget import TaglistPanel
 from widgets.tagbar import Tagbar
@@ -13,9 +12,9 @@ from widgets.thumbnails import Thumbnails
 from widgets.control import Controller
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        QMainWindow.__init__(self, parent)
+        QtGui.QMainWindow.__init__(self, parent)
 
         self.control = Controller()
 
@@ -28,17 +27,17 @@ class MainWindow(QMainWindow):
         self.control.start()
 
     def createActions(self):
-        self.exitAct = QAction("E&xit", self)
+        self.exitAct = QtGui.QAction("E&xit", self)
         self.exitAct.setShortcut("Ctrl+Q")
         self.exitAct.setStatusTip("Exit the application")
-        self.connect(self.exitAct,
-                SIGNAL("triggered()"), self, SLOT("close()"))
+        self.connect(self.exitAct, QtCore.SIGNAL("triggered()"),
+                     self, QtCore.SLOT("close()"))
 
-        self.openDBAct = QAction("&Open database...", self)
+        self.openDBAct = QtGui.QAction("&Open database...", self)
         self.openDBAct.setShortcut("Ctrl+O")
         self.openDBAct.setStatusTip("Open a database file")
-        self.connect(self.openDBAct,
-                SIGNAL("triggered()"), self.control.loadDB)
+        self.connect(self.openDBAct, QtCore.SIGNAL("triggered()"),
+                     self.control.loadDB)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
@@ -46,37 +45,42 @@ class MainWindow(QMainWindow):
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAct)
 
-class CentralWidget(QFrame):
+class CentralWidget(QtGui.QWidget):
     def __init__(self, ctrl, parent=None):
-        QFrame.__init__(self, parent)
-
-        self.setContentsMargins(0, 0, 0, 0)
+        QtGui.QWidget.__init__(self, parent)
 
         #Create widgets&layouts
-        hbox = QHBoxLayout()
-        vbox = QVBoxLayout()
+        hbox = QtGui.QHBoxLayout()
+        vbox = QtGui.QVBoxLayout()
 
         hbox.setMargin(1)
         vbox.setMargin(1)
 
-        splitter = QSplitter()
+        splitter = QtGui.QSplitter()
 
-        vboxw = QWidget()
+        vboxw = QtGui.QWidget()
 
         taglist = TaglistPanel()
         tagbar = Tagbar()
         thumbview = Thumbnails()
 
         #Connect signals
-        self.connect(taglist._tagview, SIGNAL('tagClicked'), ctrl.tagClicked)
+        self.connect(taglist._tagview, QtCore.SIGNAL('tagClicked'),
+                     ctrl.tagClicked)
 
-        self.connect(ctrl, SIGNAL('updateTags'), taglist.setTaglist)
-        self.connect(ctrl, SIGNAL('addPhotos'), thumbview.addImages)
-        self.connect(ctrl, SIGNAL('addTag'), tagbar.addTag)
-        self.connect(tagbar, SIGNAL('tagRemoved'), ctrl.tagRemoved)
+        self.connect(ctrl, QtCore.SIGNAL('updateTags'),
+                     taglist.setTaglist)
+        self.connect(ctrl, QtCore.SIGNAL('addPhotos'),
+                     thumbview.addImages)
+        self.connect(ctrl, QtCore.SIGNAL('addTag'),
+                     tagbar.addTag)
+        self.connect(tagbar, QtCore.SIGNAL('tagRemoved'),
+                     ctrl.tagRemoved)
 
-        self.connect(tagbar, SIGNAL('clearTags'), ctrl.reset)
-        self.connect(tagbar, SIGNAL('clearTags'), thumbview.clearWidget)
+        self.connect(tagbar, QtCore.SIGNAL('clearTags'),
+                     ctrl.reset)
+        self.connect(tagbar, QtCore.SIGNAL('clearTags'),
+                     thumbview.clearWidget)
 
         #Add widgets to layouts
         vboxw.setLayout(vbox)
@@ -95,7 +99,7 @@ class CentralWidget(QFrame):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    app = QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     w = MainWindow()
     w.show()
     app.exec_()
