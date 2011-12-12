@@ -124,7 +124,7 @@ class ThumbnailsModel(QAbstractListModel):
             return QVariant(self._list[index.row()])
         elif index.isValid() and role == Qt.ToolTipRole:
             # Show the path of the image as tooltip when the thumbnails is hovered
-            return self._list[index.row()].path
+            return "<b>Image path:</b>\n" + self._list[index.row()].path
         else:
             return QVariant()
 
