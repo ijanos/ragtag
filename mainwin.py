@@ -50,15 +50,15 @@ class CentralWidget(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
 
         #Create widgets&layouts
-        hbox = QtGui.QHBoxLayout()
-        vbox = QtGui.QVBoxLayout()
+        mainLayout = QtGui.QHBoxLayout()
+        rightPanelLayout = QtGui.QVBoxLayout()
 
-        hbox.setMargin(1)
-        vbox.setMargin(1)
+        mainLayout.setMargin(1)
+        rightPanelLayout.setMargin(1)
 
         splitter = QtGui.QSplitter()
 
-        vboxw = QtGui.QWidget()
+        rightPanelWidget = QtGui.QWidget()
 
         taglist = TaglistPanel()
         tagbar = Tagbar()
@@ -83,17 +83,17 @@ class CentralWidget(QtGui.QWidget):
                      thumbview.clearWidget)
 
         #Add widgets to layouts
-        vboxw.setLayout(vbox)
+        rightPanelWidget.setLayout(rightPanelLayout)
 
         splitter.addWidget(taglist)
-        splitter.addWidget(vboxw)
+        splitter.addWidget(rightPanelWidget)
 
-        hbox.addWidget(splitter)
+        mainLayout.addWidget(splitter)
 
-        vbox.addWidget(tagbar)
-        vbox.addWidget(thumbview)
+        rightPanelLayout.addWidget(tagbar)
+        rightPanelLayout.addWidget(thumbview)
 
-        self.setLayout(hbox)
+        self.setLayout(mainLayout)
 
         #Start the application
 
