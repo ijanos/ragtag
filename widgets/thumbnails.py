@@ -134,7 +134,15 @@ class ThumbnailGridView(QListView):
         QListView.__init__(self, parent)
 
         self.setViewMode(QListView.IconMode)
+
+        # Reflow the image grid after resize
         self.setResizeMode(QListView.Adjust)
+
+        # All items uses the same size, this supposedly improves performance
+        self.setUniformItemSizes(True)
+
+        # Generate images from left to right
+        self.setFlow(QListView.LeftToRight)
 
         self.imageviewpopup = ImageViewerPopup()
 
