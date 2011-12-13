@@ -78,10 +78,7 @@ class ThumbnailDelegate(QtGui.QItemDelegate):
 
         option.rect.adjust(2, 2, -2, -2)
 
-        value = index.data(QtCore.Qt.DisplayRole)
-
-        # Convert QVariant to a Thumbnail instance
-        thumbnail = value.toPyObject()
+        thumbnail = index.data(QtCore.Qt.DisplayRole)
 
         if not thumbnail.qimg:
             thumbnail.calcThumbnail(index,
@@ -120,12 +117,12 @@ class ThumbnailsModel(QtCore.QAbstractListModel):
 
     def data(self, index, role):
         if index.isValid() and role == QtCore.Qt.DisplayRole:
-            return QtCore.QVariant(self._list[index.row()])
+            return self._list[index.row()]
         elif index.isValid() and role == QtCore.Qt.ToolTipRole:
             # Show the path of the image as tooltip when the thumbnails is hovered
             return "<b>Image path:</b>\n" + self._list[index.row()].path
         else:
-            return QtCore.QVariant()
+            return None
 
 
 class ThumbnailGridView(QtGui.QListView):
@@ -170,8 +167,7 @@ class ThumbnailGridView(QtGui.QListView):
         Handle the click event on a thumbnail.
         Show the imageviewer popup
         """
-        value = index.data(QtCore.Qt.DisplayRole)
-        thumbnail = value.toPyObject()
+        thumbnail = index.data(QtCore.Qt.DisplayRole)
 
         logging.info("Thumbnail clicked %s", thumbnail.path)
 
@@ -189,9 +185,7 @@ class ThumbnailGridView(QtGui.QListView):
         # Get the index of the currently selected photo
         index = self.currentIndex()
         # get the object of the currently selected photo
-        value = index.data(QtCore.Qt.DisplayRole)
-        # Convert QVariant to a Photo instance
-        photoobj = value.toPyObject()
+        photoobj = index.data(QtCore.Qt.DisplayRole)
 
         return photoobj
 

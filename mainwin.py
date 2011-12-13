@@ -3,6 +3,10 @@
 import sys
 import logging
 
+# Use the new, more pythonic PyQt4 API
+import sip
+sip.setapi('QVariant', 2)
+
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
