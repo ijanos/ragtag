@@ -19,8 +19,8 @@ class ThumbnailCache():
 
 
 class Thumbnail(QtCore.QObject):
-    def __init__(self, imagepath, listview):
-        QtCore.QObject .__init__(self)
+    def __init__(self, imagepath, parent):
+        QtCore.QObject .__init__(self, parent=parent)
         self.path = imagepath
         self._thread = None
 
@@ -28,7 +28,7 @@ class Thumbnail(QtCore.QObject):
 
         self.pool = QtCore.QThreadPool.globalInstance()
 
-        self._qlistview = listview
+        self._qlistview = parent
         self._index = None
 
     def calcThumbnail(self, index, w, h):
@@ -142,8 +142,8 @@ class ThumbnailGridView(QtGui.QListView):
 
         self.imageviewpopup = ImageViewerPopup()
 
-        self.connect(self,
-                     QtCore.SIGNAL("activated (const QModelIndex&)"), self.click)
+        self.connect(self, QtCore.SIGNAL("activated (const QModelIndex&)"),
+                     self.click)
 
         # TODO enable this
         #self.addContextMenu()
@@ -226,7 +226,7 @@ class Thumbnails(QtGui.QWidget):
     def addImages(self, imagelist):
         logging.debug("Adding images to thumbview: %s", imagelist)
         m = ThumbnailsModel(
-               [Thumbnail(i, self._view) for i in imagelist])
+               [Thumbnail(i, parent=self._view) for i in imagelist])
         self._view.setModel(m)
 
     def clearWidget(self):
