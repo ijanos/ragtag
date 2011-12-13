@@ -14,7 +14,7 @@ class Tagbar(QWidget):
         QWidget.__init__(self, None)
 
         hbox = QHBoxLayout()
-        hbox.setMargin(1)
+        hbox.setMargin(0)
 
         self._buttons = QHBoxLayout()
 

@@ -58,7 +58,7 @@ class CentralWidget(QtGui.QWidget):
         rightPanelLayout = QtGui.QVBoxLayout()
 
         mainLayout.setMargin(1)
-        rightPanelLayout.setMargin(1)
+        rightPanelLayout.setMargin(0)
 
         splitter = QtGui.QSplitter()
 
