@@ -24,8 +24,6 @@ class Thumbnail(QtCore.QObject):
         self.path = imagepath
         self._thread = None
 
-        self.qimg = None
-
         self.pool = QtCore.QThreadPool.globalInstance()
 
         self._qlistview = parent._view
@@ -52,8 +50,11 @@ class Thumbnail(QtCore.QObject):
             logging.warning("Did not get back image from the resizer thread!")
             return
 
-        self.qimg = image
         self._thread = None  # Let the thread die
+
+        thumbPixmap = QtGui.QPixmap()
+        thumbPixmap.convertFromImage(image)
+        QtGui.QPixmapCache.insert(self.path, thumbPixmap)
 
         # Tell the QListView widget to update the item that will
         # hold the freshly calculated thumbnail
@@ -81,16 +82,15 @@ class ThumbnailDelegate(QtGui.QItemDelegate):
 
         thumbnail = index.data(QtCore.Qt.DisplayRole)
 
-        if not thumbnail.qimg:
+        imgPixmap = QtGui.QPixmap()
+        if not QtGui.QPixmapCache.find(thumbnail.path, imgPixmap):
             thumbnail.calcThumbnail(index,
                                     option.rect.width(),
                                     option.rect.height())
             painter.setPen(QtGui.QColor(0, 0, 0))
             painter.drawText(option.rect, QtCore.Qt.AlignCenter, "Loading...")
         else:
-            imgrect = thumbnail.qimg.rect()
-            pixmap = QtGui.QPixmap()
-            pixmap.convertFromImage(thumbnail.qimg)
+            imgrect = imgPixmap.rect()
 
             # Adjust the image to the center both vertically and horizontally
             adj_w = (option.rect.width() - imgrect.width()) / 2
@@ -101,7 +101,7 @@ class ThumbnailDelegate(QtGui.QItemDelegate):
                 option.rect.adjust(-2, -2, 2, 2)
                 painter.drawRect(option.rect)
                 option.rect.adjust(2, 2, -2, -2)
-            painter.drawPixmap(option.rect, pixmap)
+            painter.drawPixmap(option.rect, imgPixmap)
         painter.restore()
 
     def sizeHint(self, model, index):
