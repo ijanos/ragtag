@@ -12,6 +12,9 @@ class Thumbnailmaker(QRunnable):
     """
     def __init__(self, filename, width, height, parent=None):
         QRunnable.__init__(self)
+
+        self.dontrun = False
+
         self.filename = filename
         self._w = width
         self._h = height
@@ -19,11 +22,18 @@ class Thumbnailmaker(QRunnable):
         # Need a QObject to emit signals from a QRunnable
         self.obj = QObject()
 
+    def dontRun(self):
+        self.dontrun = True
+
     def run(self):
         """
         Method run by the worker thread, responsible for downscaling
         one image to thumbnail size
         """
+
+        if self.dontrun: # dont run the image resize if the image is not needed
+            return
+
         # Use two way scaling of the image.
         # The result will be calculated faster than a one-way
         # SmoothTransformation but will be as nice.

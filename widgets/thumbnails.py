@@ -20,6 +20,7 @@ class ThumbnailCache():
 class Thumbnail(QtCore.QObject):
     def __init__(self, imagepath, parent):
         QtCore.QObject .__init__(self, parent=parent)
+        self.parent = parent
         self.path = imagepath
         self._thread = None
 
@@ -27,7 +28,7 @@ class Thumbnail(QtCore.QObject):
 
         self.pool = QtCore.QThreadPool.globalInstance()
 
-        self._qlistview = parent
+        self._qlistview = parent._view
         self._index = None
 
     def calcThumbnail(self, index, w, h):
@@ -39,6 +40,7 @@ class Thumbnail(QtCore.QObject):
 
         thread = Thumbnailmaker(self.path, w, h)
         self.connect(thread.obj, QtCore.SIGNAL("imageDone"), self.imageDone)
+        self.connect(self.parent, QtCore.SIGNAL("stopCalculations"), thread.dontRun)
 
         #Hold onto a reference to prevent PyQt from dereferencing
         self._thread = thread
@@ -193,11 +195,13 @@ class Thumbnails(QtGui.QWidget):
     """
     This widget can display a list of images in a thumbnail grid
 
-    has two slots:
+    slots:
         addImages: takes a list of strings, paths to images
         clearWidget: remove the thumbnals, show empty the widget
 
-    emits no signals
+    signals:
+        stopCalculations: notifies child widgets that the canvas is cleared,
+            and do not run any more image resize functions
     """
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -223,12 +227,16 @@ class Thumbnails(QtGui.QWidget):
         self.setLayout(layout)
 
     def addImages(self, imagelist):
+        self.emit(QtCore.SIGNAL('stopCalculations'))
+
         logging.debug("Adding images to thumbview: %s", imagelist)
         m = ThumbnailsModel(
-               [Thumbnail(i, parent=self._view) for i in imagelist])
+               [Thumbnail(i, parent=self) for i in imagelist])
         self._view.setModel(m)
 
     def clearWidget(self):
+        self.emit(QtCore.SIGNAL('stopCalculations'))
+
         m = ThumbnailsModel([])
         self._view.setModel(m)
 
