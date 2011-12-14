@@ -41,7 +41,7 @@ def traverseDir(directory, extfilter, fun):
     Walk the directory and its subdirectories and look for files
     ending with extfilter and call fun on them
     """
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         for name in files:
             ext = name.split('.')[-1].lower()
             if  ext in extfilter:
