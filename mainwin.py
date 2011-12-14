@@ -43,11 +43,41 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.openDBAct, QtCore.SIGNAL("triggered()"),
                      self.control.loadDB)
 
+        self.actionAbout = QtGui.QAction("About", self)
+        self.actionAbout.setStatusTip("Show an about box.")
+        self.connect(self.actionAbout, QtCore.SIGNAL("activated()"),
+                     self.slotAbout)
+
+        self.actionAboutQt = QtGui.QAction("About &Qt", self)
+        self.actionAboutQt.setStatusTip("Show an about box for Qt.")
+        self.connect(self.actionAboutQt, QtCore.SIGNAL("activated()"),
+                     self.slotAboutQt)
+
     def createMenus(self):
+        # File menu
         self.fileMenu = self.menuBar().addMenu("&File")
         self.fileMenu.addAction(self.openDBAct)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAct)
+
+        # Edit menu
+        self.editMenu = self.menuBar().addMenu("&Edit")
+
+        # Help menu
+        self.helpMenu = self.menuBar().addMenu("&Help")
+        self.helpMenu.addAction(self.actionAboutQt)
+        self.helpMenu.addAction(self.actionAbout)
+
+    def slotAbout(self):
+        QtGui.QMessageBox.about(self,
+                            "ragtag",
+                            "<h1>Ragtag</h1>"
+                            "A simple, tag-based image collection browser<br/>"
+                            "<a href='https://github.com/ijanos/ragtag'>"
+                            "https://github.com/ijanos/ragtag</a>")
+
+    def slotAboutQt(self):
+        QtGui.QMessageBox.aboutQt(self)
 
 class CentralWidget(QtGui.QWidget):
     def __init__(self, ctrl, parent=None):
