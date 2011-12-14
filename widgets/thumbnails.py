@@ -234,7 +234,7 @@ class Thumbnails(QtGui.QWidget):
         self._view.setModel(m)
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     w = Thumbnails()
     w.show()
     app.exec_()
