@@ -38,7 +38,7 @@ class Tagbar(QWidget):
 
     def clearTags(self):
         self.emit(SIGNAL('clearTags'))
-        for i in xrange(0, self._buttons.count()):
+        while (self._buttons.count() > 0):
             item = self._buttons.itemAt(0) # always delete the first item
             # because items are being deleted during the loop
             widget = item.widget()
