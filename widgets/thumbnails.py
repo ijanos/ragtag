@@ -4,7 +4,6 @@ A widget for displaying a thumbnail grid
 """
 
 import sys
-import subprocess
 import logging
 
 from PyQt4 import QtCore
