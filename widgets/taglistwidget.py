@@ -6,6 +6,7 @@ from PyQt4 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+import logging
 
 class MyListItem(QListWidgetItem):
     """ Extend QListWidgetItem with some information about the tag"""
@@ -13,9 +14,17 @@ class MyListItem(QListWidgetItem):
         QListWidgetItem.__init__(self, parent)
         self._name = name
         self._tagid = tagid
-        self._wight = weight
+        self._weight = weight
+        self.parent = parent
 
         self.setText(unicode(name, encoding='utf-8'))
+
+    def __lt__(self, other):
+        if self.parent.sortByWeight:
+            return self._weight > other._weight
+        else:
+            return self._name.lower() < other._name.lower()
+
 
 
 class MyTaglistWidget(QListWidget):
@@ -26,7 +35,11 @@ class MyTaglistWidget(QListWidget):
     def __init__(self, parent=None):
         QListWidget.__init__(self, parent)
         self.setAlternatingRowColors(True)
-        self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'), self.clicked)
+        self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'),
+                     self.clicked)
+
+        self.sortByWeight = True
+
 
     def clicked(self, item):
         self.emit(SIGNAL('tagClicked'), item._tagid, item._name)
@@ -45,7 +58,15 @@ class MyTaglistWidget(QListWidget):
     def setTaglist(self, tags):
         self.clear()
         for (tid, tname, tw) in tags:
-            self.addItem(MyListItem(tid, tname, tw))
+            self.addItem(MyListItem(tid, tname, tw, parent=self))
+
+    def sortModeChanged(self):
+        #read new settings
+        if self.sortByWeight:
+            self.sortByWeight = False
+        else:
+            self.sortByWeight = True
+        self.sortItems()
 
 
 class TaglistPanel(QWidget):
@@ -56,12 +77,11 @@ class TaglistPanel(QWidget):
         vbox.setMargin(1)
 
         self._itemedit = QLineEdit()
-
         vbox.addWidget(self._itemedit)
 
         self._tagview = MyTaglistWidget()
-
-        self.connect(self._itemedit, SIGNAL('textChanged(QString)'), self._tagview.filterList)
+        self.connect(self._itemedit, SIGNAL('textChanged(QString)'),
+                     self._tagview.filterList)
 
         vbox.addWidget(self._tagview)
 
@@ -71,6 +91,11 @@ class TaglistPanel(QWidget):
     def setTaglist(self, taglist):
         self._itemedit.clear()
         self._tagview.setTaglist(taglist)
+
+    def sortModeChanged(self):
+        """ SLOT """
+        logging.debug("sort mode changed")
+        self._tagview.sortModeChanged()
 
     def sizeHint(self):
         return QSize(35,16777215)

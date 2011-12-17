@@ -20,10 +20,13 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
 
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                           QtGui.QSizePolicy.Expanding)
+
         self.control = Controller()
 
-        centralWidget = CentralWidget(self.control)
-        self.setCentralWidget(centralWidget)
+        self.centralWidget = CentralWidget(self.control)
+        self.setCentralWidget(self.centralWidget)
 
         self.createActions()
         self.createMenus()
@@ -42,6 +45,16 @@ class MainWindow(QtGui.QMainWindow):
         self.openDBAct.setStatusTip("Open a database file")
         self.connect(self.openDBAct, QtCore.SIGNAL("triggered()"),
                      self.control.loadDB)
+
+        self.actionSortByAlpha = QtGui.QAction("Sort tags alphabetically", self)
+        self.actionSortByAlpha.setCheckable(True)
+        self.connect(self.actionSortByAlpha, QtCore.SIGNAL("triggered()"),
+                        self.centralWidget.taglist.sortModeChanged)
+
+        self.actionOpenWith = QtGui.QAction("Open with...", self)
+
+        self.actionCopyImagePath = QtGui.QAction("Copy image path", self)
+        self.actionCopyImagePath.setShortcut("Ctrl+C")
 
         self.actionAbout = QtGui.QAction("About", self)
         self.actionAbout.setStatusTip("Show an about box.")
@@ -62,6 +75,10 @@ class MainWindow(QtGui.QMainWindow):
 
         # Edit menu
         self.editMenu = self.menuBar().addMenu("&Edit")
+        self.editMenu.addAction(self.actionOpenWith)
+        self.editMenu.addAction(self.actionCopyImagePath)
+        self.editMenu.addAction(self.actionSortByAlpha)
+
 
         # Help menu
         self.helpMenu = self.menuBar().addMenu("&Help")
@@ -79,6 +96,10 @@ class MainWindow(QtGui.QMainWindow):
     def slotAboutQt(self):
         QtGui.QMessageBox.aboutQt(self)
 
+    def sizeHint(self):
+        return QtCore.QSize(1900,700)
+
+
 class CentralWidget(QtGui.QWidget):
     def __init__(self, ctrl, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -94,16 +115,16 @@ class CentralWidget(QtGui.QWidget):
 
         rightPanelWidget = QtGui.QWidget()
 
-        taglist = TaglistPanel()
+        self.taglist = TaglistPanel()
         tagbar = Tagbar()
         thumbview = Thumbnails()
 
         #Connect signals
-        self.connect(taglist._tagview, QtCore.SIGNAL('tagClicked'),
+        self.connect(self.taglist._tagview, QtCore.SIGNAL('tagClicked'),
                      ctrl.tagClicked)
 
         self.connect(ctrl, QtCore.SIGNAL('updateTags'),
-                     taglist.setTaglist)
+                     self.taglist.setTaglist)
         self.connect(ctrl, QtCore.SIGNAL('addPhotos'),
                      thumbview.addImages)
         self.connect(ctrl, QtCore.SIGNAL('addTag'),
@@ -119,7 +140,7 @@ class CentralWidget(QtGui.QWidget):
         #Add widgets to layouts
         rightPanelWidget.setLayout(rightPanelLayout)
 
-        splitter.addWidget(taglist)
+        splitter.addWidget(self.taglist)
         splitter.addWidget(rightPanelWidget)
 
         mainLayout.addWidget(splitter)
