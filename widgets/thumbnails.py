@@ -217,7 +217,7 @@ class Thumbnails(QtGui.QWidget):
         ##self._threadpool.setMaxThreadCount(2)
 
         layout = QtGui.QHBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0,0,0,0)
 
         layout.addWidget(self._view)
 

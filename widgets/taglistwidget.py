@@ -74,7 +74,7 @@ class TaglistPanel(QWidget):
         QWidget.__init__(self, None)
 
         vbox = QVBoxLayout()
-        vbox.setMargin(1)
+        vbox.setContentsMargins(0,0,0,0)
 
         self._itemedit = QLineEdit()
         vbox.addWidget(self._itemedit)
