@@ -135,6 +135,9 @@ class ThumbnailGridView(QtGui.QListView):
         # Reflow the image grid after resize
         self.setResizeMode(QtGui.QListView.Adjust)
 
+        # Set a few pixel space between the thumbnails
+        self.setSpacing(5)
+
         # All items uses the same size, this supposedly improves performance
         self.setUniformItemSizes(True)
 
