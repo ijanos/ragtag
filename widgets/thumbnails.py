@@ -68,6 +68,8 @@ class ThumbnailDelegate(QtGui.QItemDelegate):
     def paint(self, painter, option, index):
         painter.save()
 
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+
         border = True
 
         option.rect.adjust(0, 0, -2, -2)
