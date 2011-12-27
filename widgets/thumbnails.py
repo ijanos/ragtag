@@ -33,8 +33,10 @@ class Thumbnail(QtCore.QObject):
         self._index = index
 
         thread = Thumbnailmaker(self.path, w, h)
-        self.connect(thread.obj, QtCore.SIGNAL("imageDone"), self.imageDone)
-        self.connect(self.parent, QtCore.SIGNAL("stopCalculations"), thread.dontRun)
+        self.connect(thread.obj, QtCore.SIGNAL("imageDone"),
+                     self.imageDone)
+        self.connect(self.parent, QtCore.SIGNAL("stopCalculations"),
+                     thread.dontRun)
 
         #Hold onto a reference to prevent PyQt from dereferencing
         self._thread = thread
@@ -118,7 +120,7 @@ class ThumbnailsModel(QtCore.QAbstractListModel):
         if index.isValid() and role == QtCore.Qt.DisplayRole:
             return self._list[index.row()]
         elif index.isValid() and role == QtCore.Qt.ToolTipRole:
-            # Show the path of the image as tooltip when the thumbnails is hovered
+            # Show the path of the image as tooltip
             return "<b>Image path:</b>\n" + self._list[index.row()].path
         else:
             return None
@@ -162,7 +164,8 @@ class ThumbnailGridView(QtGui.QListView):
 
         self.action1 = QtGui.QAction("Menu item1", self)
         self.addAction(self.action1)
-        self.connect(self.action1, QtCore.SIGNAL("triggered()"), self.rightClick)
+        self.connect(self.action1, QtCore.SIGNAL("triggered()"),
+                     self.rightClick)
 
     def click(self, index):
         """
@@ -211,14 +214,13 @@ class Thumbnails(QtGui.QWidget):
         d = ThumbnailDelegate()
         self._view.setItemDelegate(d)
 
-
         # Let Qt decide the ideal thread count
         # only override this with good reason, or debug purposes
         ##self._threadpool = QThreadPool.globalInstance()
         ##self._threadpool.setMaxThreadCount(2)
 
         layout = QtGui.QHBoxLayout()
-        layout.setContentsMargins(0,0,0,0)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addWidget(self._view)
 
