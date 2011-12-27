@@ -13,10 +13,6 @@ from thumbnailer import Thumbnailmaker
 from ImageViewerPopup import ImageViewerPopup
 
 
-class ThumbnailCache():
-    pass
-
-
 class Thumbnail(QtCore.QObject):
     def __init__(self, imagepath, parent):
         QtCore.QObject .__init__(self, parent=parent)
