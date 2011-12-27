@@ -68,15 +68,9 @@ class ThumbnailDelegate(QtGui.QItemDelegate):
 
         border = True
 
-        option.rect.adjust(0, 0, -2, -2)
+        option.rect.adjust(4, 4, -4, -4)
 
         painter.setPen(QtGui.QColor(200, 200, 200))
-        if option.state & QtGui.QStyle.State_Selected:
-            painter.setBrush(QtGui.QBrush(QtCore.Qt.red))
-        else:
-            painter.setBrush(QtGui.QBrush(QtCore.Qt.white))
-
-        option.rect.adjust(2, 2, -2, -2)
 
         thumbnail = index.data(QtCore.Qt.DisplayRole)
 
@@ -91,15 +85,21 @@ class ThumbnailDelegate(QtGui.QItemDelegate):
             imgrect = imgPixmap.rect()
 
             # Adjust the image to the center both vertically and horizontally
-            adj_w = (option.rect.width() - imgrect.width()) / 2
-            adj_h = (option.rect.height() - imgrect.height()) / 2
+            adj_w = (option.rect.width() - imgrect.width()) / 2.0
+            adj_h = (option.rect.height() - imgrect.height()) / 2.0
 
             option.rect.adjust(adj_w, adj_h, -adj_w, -adj_h)
+            if option.state & QtGui.QStyle.State_Selected:
+                option.rect.adjust(-2, -2, 2, 2)
+                painter.setBrush(QtGui.QBrush(QtCore.Qt.red))
+            else:
+                painter.setBrush(QtGui.QBrush(QtCore.Qt.white))
             if border:
                 option.rect.adjust(-2, -2, 2, 2)
                 painter.drawRect(option.rect)
                 option.rect.adjust(2, 2, -2, -2)
             painter.drawPixmap(option.rect, imgPixmap)
+
         painter.restore()
 
     def sizeHint(self, model, index):
