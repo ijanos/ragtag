@@ -35,10 +35,19 @@ class MyTaglistWidget(QListWidget):
     def __init__(self, parent=None):
         QListWidget.__init__(self, parent)
         self.setAlternatingRowColors(True)
+
+        self.setMouseTracking(True)
+
+        self.connect(self, SIGNAL('itemEntered (QListWidgetItem *)'),
+                     self.selectOnHover)
+
         self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'),
                      self.clicked)
 
         self.sortByWeight = True
+
+    def selectOnHover(self, item):
+         self.setItemSelected(item, True)
 
 
     def clicked(self, item):
