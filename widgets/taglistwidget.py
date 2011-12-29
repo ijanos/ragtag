@@ -43,6 +43,8 @@ class MyTaglistWidget(QListWidget):
 
         self.connect(self, SIGNAL('itemClicked (QListWidgetItem *)'),
                      self.clicked)
+        self.connect(self, SIGNAL('itemActivated (QListWidgetItem *)'),
+                     self.clicked)
 
         self.sortByWeight = True
 
